@@ -25,7 +25,7 @@ class SubsetTransformer(TransformerMixin):
         self.transformer.fit(X, y)
         self.feature_names_in = X.columns.tolist()
         self.default_in = X.iloc[0]
-        self.default_out = self.transformer.transform(X.loc[:1,:]).iloc[0]
+        self.default_out = self.transformer.transform(X.iloc[0:1]).iloc[0]
 
         return self
 
