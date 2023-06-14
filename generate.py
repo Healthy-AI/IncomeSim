@@ -18,6 +18,7 @@ if __name__ == "__main__":
     parser.add_argument('-T', '--horizon', type=int, default=1, dest='horizon', help='Length of horizon')
     parser.add_argument('-s', '--seed', type=int, default=0, dest='seed', help='Random seed')
     parser.add_argument('-d', '--datadir', type=str, default='data/income', dest='datadir', help='Data directory')
+    parser.add_argument('-p', '--policy', type=str, default='default', dest='policy', help='Starting policy')
 
     args = parser.parse_args()
     
@@ -40,6 +41,18 @@ if __name__ == "__main__":
     print('Fitting ARM model (suppressing warnings) ...')
     A.fit(D_tr)
     
+    # Set propensity model
+    if args.policy in ['no', 'full']:
+        if args.policy == 'no':
+            policy = 'No training'
+        elif args.policy == 'full':
+            policy = 'Full-time studies'
+        A.replace_variable('training', [], ConstantSampler(policy), 
+                       seq_sampler=TrainingTransition(TrainingSampler()), 
+                       seq_parents_curr=['age', 'sex', 'education', 'education-num', 'relationship', 'time'], 
+                       seq_parents_prev=['training','income'], 
+                       seq_transform_input=False)
+
     # Sample observations
     np.random.seed(args.seed)
     print('Sampling observations ...')
@@ -70,7 +83,7 @@ if __name__ == "__main__":
     df = df.rename(columns={'training': 'studies'})
     
     # Save data to file
-    fname = '%s_m%d_T%d_s%d.pkl' % (args.label, args.n_samples, args.horizon, args.seed)
+    fname = '%s_%s_n%d_T%d_s%d.pkl' % (args.label, args.policy, args.n_samples, args.horizon, args.seed)
     df.to_pickle('data/%s' % fname)
     print('Saved result to: %s' % fname)
     

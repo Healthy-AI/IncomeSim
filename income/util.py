@@ -16,7 +16,7 @@ class SubsetTransformer(TransformerMixin):
         transformer = ColumnTransformer(
             transformers=[
                 ("num", StandardScaler(), selector(dtype_exclude="category")),
-                ("cat", OneHotEncoder(sparse_output=False), selector(dtype_include="category")),
+                ("cat", OneHotEncoder(sparse_output=False, handle_unknown='ignore'), selector(dtype_include="category")),
             ], verbose_feature_names_out=False
         )
         self.transformer = transformer
