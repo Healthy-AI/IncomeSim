@@ -1,5 +1,12 @@
 # IncomeSim
 
+IncomeSim is a time-series simulator based on the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult).
+
+# ProbAI 23 lecture
+
+If you want to follow along in the notebook during the ProbAI lecture, clone this repository and open [probai_lecture_github.ipynb](probai_lecture_github.ipynb)
+
+# General information
 
 ## Installing prerequisites
 
