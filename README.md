@@ -11,7 +11,7 @@ If you want to follow along in the notebook during the ProbAI lecture, clone thi
 ## Installing prerequisites
 
 * IncomeSim is written in Python 3 and based on the Scikit-learn package and the Adult dataset. 
-* Start by installing python modules ```pandas, numpy, sklearn```
+* Start by installing python modules ```pandas, numpy, scikit-learn, jupyter, requests```
 
 ## Preparing the data files
 
