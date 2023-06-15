@@ -4,14 +4,16 @@ IncomeSim is a time-series simulator based on the [Adult dataset](http://archive
 
 # ProbAI 23 lecture
 
-If you want to follow along in the notebook during the ProbAI lecture, clone this repository and open [probai_lecture_github.ipynb](probai_lecture_github.ipynb)
+If you want to follow along in the notebook during the ProbAI lecture, you have two options: 
+1. Clone this repository and open [probai_lecture_github.ipynb](probai_lecture_github.ipynb)
+2. Work in Colab from this [notebook](https://colab.research.google.com/drive/1jlEsSYcCDiqhamshxhkdQ703KKWaJHL9?usp=sharing)
 
 # General information
 
 ## Installing prerequisites
 
 * IncomeSim is written in Python 3 and based on the Scikit-learn package and the Adult dataset. 
-* Start by installing python modules ```pandas, numpy, scikit-learn, jupyter, requests```
+* Start by installing python modules ```pandas, numpy, scikit-learn, jupyter, requests, matplotlib```
 
 ## Preparing the data files
 
