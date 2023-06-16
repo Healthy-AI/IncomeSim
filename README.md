@@ -8,7 +8,7 @@ If you want to follow along in the notebook during the ProbAI lecture, you have 
 1. Clone this repository and open [probai_lecture_github.ipynb](probai_lecture_github.ipynb) in Jupyter/Jupyter lab
 2. Work in Colab from this [notebook](https://colab.research.google.com/drive/1jlEsSYcCDiqhamshxhkdQ703KKWaJHL9?usp=sharing)
 
-The slides for the lecture can be found here.
+The slides for the lecture can be found [here](ProbAI_Causal_machine_learning.pdf).
 
 # Installing prerequisites
 
