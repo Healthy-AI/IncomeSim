@@ -8,6 +8,8 @@ If you want to follow along in the notebook during the ProbAI lecture, you have 
 1. Clone this repository and open [probai_lecture_github.ipynb](probai_lecture_github.ipynb) in Jupyter/Jupyter lab
 2. Work in Colab from this [notebook](https://colab.research.google.com/drive/1jlEsSYcCDiqhamshxhkdQ703KKWaJHL9?usp=sharing)
 
+The slides for the lecture can be found here.
+
 # Installing prerequisites
 
 * IncomeSim is written in Python 3 and based on the Scikit-learn package and the Adult dataset. 
