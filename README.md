@@ -13,11 +13,21 @@ The slides for the lecture can be found on Canvas.
 ## Installing prerequisites
 
 * IncomeSim is written in Python 3 and based on the Scikit-learn package and the Adult dataset. 
-* Start by installing python modules ```pandas, numpy, scikit-learn, jupyter, requests, matplotlib```
+* Start by installing python modules ```pandas, numpy, scikit-learn, jupyter, matplotlib```
+
+For example using a virtual environment: 
+```bash
+virtualenv dat465
+source dat465/bin/activate
+pip install pandas numpy scikit-learn jupyter matplotlib
+```
 
 ## Coding in the demo
 
-* Open [dat465_lecture_demo.ipynb](dat465_lecture_demo.ipynb) in Jupyter in a Pythin environment with the prerequisites above
+* Open [dat465_lecture_demo.ipynb](dat465_lecture_demo.ipynb) in Jupyter in a Python environment with the prerequisites above
+```bash
+jupyter notebook   
+```
 
 
 # ProbAI 23 lecture
