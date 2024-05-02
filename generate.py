@@ -44,13 +44,13 @@ if __name__ == "__main__":
     # Set propensity model
     if args.policy in ['no', 'full']:
         if args.policy == 'no':
-            policy = 'No training'
+            policy = 'No studies'
         elif args.policy == 'full':
             policy = 'Full-time studies'
-        A.replace_variable('training', [], ConstantSampler(policy), 
-                       seq_sampler=TrainingTransition(TrainingSampler()), 
+        A.replace_variable('studies', [], ConstantSampler(policy), 
+                       seq_sampler=StudiesTransition(StudiesSampler()), 
                        seq_parents_curr=['age', 'sex', 'education', 'education-num', 'relationship', 'time'], 
-                       seq_parents_prev=['training','income'], 
+                       seq_parents_prev=['studies','income'], 
                        seq_transform_input=False)
 
     # Sample observations
@@ -64,23 +64,18 @@ if __name__ == "__main__":
 
     Tend = args.horizon-1
     df['income'] = S[S['time']==Tend]['income'].values
-
-    df.loc[df['training']=='No training','training'] = 'No studies'
     
     # Make categorical columns have the right type
     c_cols = ['native-country', 'sex', 'race', 'education', 
-              'training', 'workclass', 'occupation', 'marital-status', 'relationship']
+              'studies', 'workclass', 'occupation', 'marital-status', 'relationship']
     df[c_cols] = df[c_cols].astype('category')
 
     # Drop index columns
     df = df.drop(columns=['time','id'])
     
     # Reorder columns
-    special_cols = ['training', 'income']
+    special_cols = ['studies', 'income']
     df = df[[c for c in df.columns if c not in special_cols] + special_cols]
-    
-    # Rename columns
-    df = df.rename(columns={'training': 'studies'})
     
     # Save data to file
     fname = '%s_%s_n%d_T%d_s%d.pkl' % (args.label, args.policy, args.n_samples, args.horizon, args.seed)

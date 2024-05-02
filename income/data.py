@@ -10,7 +10,7 @@ def load_income_data(folder='data/adult/', data_only=False):
 
     args
         folder: The folder where the data files are
-        data_only: If true, returns only the dataframe for the training potion
+        data_only: If true, returns only the dataframe for the training portion
 
     returns
         D_tr: Training dataframe
@@ -18,7 +18,6 @@ def load_income_data(folder='data/adult/', data_only=False):
         c_num: Numerical columns
         c_out: Outcome column
         c_features: Feature columns
-        educ_map: Map between education-num and education
     """
 
     train_file = os.path.join(folder, 'adult.data')
@@ -56,11 +55,12 @@ def load_income_data(folder='data/adult/', data_only=False):
     c_features = [c for c in list(D_tr.columns) if c not in ['income>50k', c_out]]
 
     # Construct map between education-num and education
-    educ_map = dict(D_tr[['education', 'education-num']].groupby('education', as_index=False).mean().sort_values('education-num').values)
+    # educ_map = dict(D_tr[['education', 'education-num']].groupby('education', as_index=False).mean().sort_values('education-num').values)
+    # @TODO: No longer used. Hard-coded in income_samplers.py instead
 
-    c_cat += ['training']
-    L_training = TrainingSampler.classes_
-    D_tr['training'] = (L_training*int(np.ceil(D_tr.shape[0]/len(L_training))))[:D_tr.shape[0]]
+    c_cat += ['studies']
+    L_studies = StudiesSampler.classes_
+    D_tr['studies'] = (L_studies*int(np.ceil(D_tr.shape[0]/len(L_studies))))[:D_tr.shape[0]]
 
     D_tr['income'] = D_tr['income>50k'].copy()
 
@@ -70,4 +70,4 @@ def load_income_data(folder='data/adult/', data_only=False):
     if data_only:
         return D_tr
     else:
-        return D_tr, c_cat, c_num, c_out, c_features, educ_map
+        return D_tr, c_cat, c_num, c_out, c_features

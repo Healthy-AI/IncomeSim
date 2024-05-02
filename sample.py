@@ -44,7 +44,8 @@ def sample(cfg):
     df0 = S[S['time']==0]
     df = df0.copy().rename(columns={'income': 'income_current'})
 
-    Tend = args.horizon-1
+    # Get the income from the last time point as the outcome variable
+    Tend = cfg.samples.horizon-1
     df['income'] = S[S['time']==Tend]['income'].values
     
     # Make categorical columns have the right type
@@ -60,9 +61,10 @@ def sample(cfg):
     df = df[[c for c in df.columns if c not in special_cols] + special_cols]
     
     # Save data to file
-    fname = '%s_%s_n%d_T%d_s%d.pkl' % (args.label, args.policy, args.n_samples, args.horizon, args.seed)
-    df.to_pickle('data/%s' % fname)
-    print('Saved result to: %s' % fname)
+    fname = '%s_%s_n%d_T%d_s%d.pkl' % (cfg.samples.label, cfg.samples.policy, cfg.samples.n_samples, cfg.samples.horizon, cfg.samples.seed)
+    fpath = os.path.join(cfg.samples.path, fname)
+    df.to_pickle(fpath)
+    print('Saved result to: %s' % fpath)
 
 
 if __name__ == "__main__":

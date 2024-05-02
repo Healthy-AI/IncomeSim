@@ -7,10 +7,13 @@ from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from .util import *
 from .samplers import *
 
-class TrainingSampler(Sampler):
+EDUC_MAP = {'Preschool': 1.0, '1st-4th': 2.0, '5th-6th': 3.0, '7th-8th': 4.0, '9th': 5.0, '10th': 6.0, '11th': 7.0, '12th': 8.0, 'HS-grad': 9.0, 
+            'Some-college': 10.0, 'Assoc-voc': 11.0, 'Assoc-acdm': 12.0, 'Bachelors': 13.0, 'Masters': 14.0, 'Prof-school': 15.0, 'Doctorate': 16.0}
+
+class StudiesSampler(Sampler):
     """
     
-    Sampler of training (action)
+    Sampler of studies (action)
     
     Relies on access to columns in sampling:
     
@@ -18,7 +21,7 @@ class TrainingSampler(Sampler):
         
     """
     
-    classes_ = ['No training', 'Evening course', 'Day course', 'Full-time studies']
+    classes_ = ['No studies', 'Evening course', 'Day course', 'Full-time studies']
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -32,8 +35,8 @@ class TrainingSampler(Sampler):
     def sample_proba(self, x):
         n = x.shape[0]
         
-        # Overall, no training and full-time studies most common. Evening courses less
-        # Order: 'No training', 'Evening course', 'Day course', 'Full-time studies'
+        # Overall, no studies and full-time studies most common. Evening courses less
+        # Order: 'No studies', 'Evening course', 'Day course', 'Full-time studies'
         c_const = np.array([[7., -5., -3.5,  2.]])
         c_age   = np.array([[2., 1., 0., -.3]])
         
@@ -75,7 +78,7 @@ class TrainingSampler(Sampler):
         
         return y
     
-class TrainingTransition(Sampler):
+class StudiesTransition(Sampler):
     """
     Relies on access to columns in sampling:
         ...
@@ -101,11 +104,11 @@ class TrainingTransition(Sampler):
         ongoing = ['11th','9th','Some-college','Assoc-acdm','7th-8th',
                    'Assoc-voc','5th-6th','10th','Preschool','12th','1st-4th']
         
-        p = p + 2*((x['training#prev'] == 'Full-time studies')&(x['education'].isin(ongoing))) \
+        p = p + 2*((x['studies#prev'] == 'Full-time studies')&(x['education'].isin(ongoing))) \
                     .values.reshape([-1, 1])*np.array([[0, 0, 0, 1]])*p
         
         # Make it unlikely to start full-time studies from nothing
-        p = p - 0.7*(x['training#prev'] != 'Full-time studies').values.reshape([-1, 1])*np.array([[0, 0, 0, 1]])*p
+        p = p - 0.7*(x['studies#prev'] != 'Full-time studies').values.reshape([-1, 1])*np.array([[0, 0, 0, 1]])*p
 
         # Make it unlikely to start full-time studies or day course if income is already reasonably high
         p = p - 0.7*(x['income#prev'] > 50000).values.reshape([-1, 1])*np.array([[0, 0, 0.7, 1]])*p
@@ -121,7 +124,7 @@ class TrainingTransition(Sampler):
         return y
     
 
-class TrainingSamplerPolicy1(Sampler):
+class StudiesSamplerPolicy1(Sampler):
     """
     Relies on access to columns in sampling:
     """
@@ -134,11 +137,11 @@ class TrainingSamplerPolicy1(Sampler):
         return self
 
     def sample(self, n_samples):
-        y = pd.DataFrame({'training': np.array(['No training']*n_samples)})
+        y = pd.DataFrame({'studies': np.array(['No studies']*n_samples)})
         
-        return y['training'].values.ravel()
+        return y['studies'].values.ravel()
     
-class TrainingTransitionPolicy1(Sampler):
+class StudiesTransitionPolicy1(Sampler):
     """
     Relies on access to columns in sampling:
         Age
@@ -157,12 +160,12 @@ class TrainingTransitionPolicy1(Sampler):
         n = x.shape[0]
         
         c = (x['age'] < 40)&(x['income#prev']<20000)&(x['education-num']<13)
-        y = pd.DataFrame({'training': np.array(['No training']*n)})
-        y.loc[c,'training'] = 'Full-time studies'
+        y = pd.DataFrame({'studies': np.array(['No studies']*n)})
+        y.loc[c,'studies'] = 'Full-time studies'
 
         return y.values.ravel()
     
-class TrainingSamplerPolicy2(Sampler):
+class StudiesSamplerPolicy2(Sampler):
     """
     Relies on access to columns in sampling:
     """
@@ -182,14 +185,14 @@ class TrainingSamplerPolicy2(Sampler):
         #c3 always false in first time step
         c4 = (1-c1)&(x['education-num']<13)
         
-        y = pd.DataFrame({'training': np.array(['No training']*n)})
+        y = pd.DataFrame({'studies': np.array(['No studies']*n)})
         
-        y.loc[c1,'training'] = 'Full-time studies'
-        y.loc[c4,'training'] = 'Evening course'
+        y.loc[c1,'studies'] = 'Full-time studies'
+        y.loc[c4,'studies'] = 'Evening course'
         
-        return y['training'].values.ravel()
+        return y['studies'].values.ravel()
     
-class TrainingTransitionPolicy2(Sampler):
+class StudiesTransitionPolicy2(Sampler):
     """
     Relies on access to columns in sampling:
         Age
@@ -212,14 +215,14 @@ class TrainingTransitionPolicy2(Sampler):
         c3 = (1-c2)&(x['income#prev']<20000)
         c4 = (1-c3)&(x['education-num']<13)
         
-        y = pd.DataFrame({'training': np.array(['No training']*n)})
+        y = pd.DataFrame({'studies': np.array(['No studies']*n)})
         
-        y.loc[c1,'training'] = 'Full-time studies'
-        y.loc[c2,'training'] = 'Full-time studies'
-        y.loc[c3,'training'] = 'Day course'
-        y.loc[c4,'training'] = 'Evening course'
+        y.loc[c1,'studies'] = 'Full-time studies'
+        y.loc[c2,'studies'] = 'Full-time studies'
+        y.loc[c3,'studies'] = 'Day course'
+        y.loc[c4,'studies'] = 'Evening course'
 
-        return y['training'].values.ravel()
+        return y['studies'].values.ravel()
 
 class IncomeSampler(Sampler):
     """
@@ -241,7 +244,7 @@ class IncomeSampler(Sampler):
         
     def fit(self, x, y):     
 
-        cols = [c for c in x.columns if 'training_' not in c]
+        cols = [c for c in x.columns if 'studies_' not in c]
         self.model_ = RandomForestRegressor(n_estimators=10, min_samples_leaf=50).fit(x[cols],y)
         
         yp = self.model_.predict(x[cols])
@@ -256,7 +259,7 @@ class IncomeSampler(Sampler):
     def sample(self, x, update_params=False):    
         
         n = x.shape[0]
-        cols = [c for c in x.columns if 'training_' not in c]
+        cols = [c for c in x.columns if 'studies_' not in c]
         
         yp = self.model_.predict(x[cols])
         yp = yp + np.random.randn(n)*0.2+0.3 # To control unemployment rate
@@ -269,8 +272,8 @@ class IncomeSampler(Sampler):
             self.b = yp.max()
         yp = yp*(1-np.sqrt(self.brier_)) + (yp>0)*np.random.beta(1.2, 20.5, n)*self.b*np.sqrt(self.brier_)*2 # Add noise
         
-        yp[x['training_Full-time studies']==1] = 0
-        yp[x['training_Day course']==1] = 4*yp[x['training_Day course']==1]/5
+        yp[x['studies_Full-time studies']==1] = 0
+        yp[x['studies_Day course']==1] = 4*yp[x['studies_Day course']==1]/5
         
         yp[x['workclass_Without-pay']==1] = 0
         
@@ -306,17 +309,17 @@ class IncomeTransition(Sampler):
         y_prev = x['income#prev']
         
         # If switching between full-time studies and not, don't look at previous income
-        prev_weight = self.prev_weight*(x['training#prev_Full-time studies'] == x['training_Full-time studies'])
+        prev_weight = self.prev_weight*(x['studies#prev_Full-time studies'] == x['studies_Full-time studies'])
             
         y_new = self.sampler.sample(x_curr)
-        y_new += x['training#prev_Full-time studies']*(np.random.rand(n)*5000)
-        y_new += x['training#prev_Day course']*(np.random.rand(n)*1000)
-        y_new += x['training#prev_Evening course']*(np.random.rand(n)*100)
+        y_new += x['studies#prev_Full-time studies']*(np.random.rand(n)*5000)
+        y_new += x['studies#prev_Day course']*(np.random.rand(n)*1000)
+        y_new += x['studies#prev_Evening course']*(np.random.rand(n)*100)
         
         y = prev_weight*y_prev + (1-prev_weight)*y_new
         
-        y[x['training_Full-time studies']==1] = 0
-        y[x['training_Day course']==1] = 4*y[x['training_Day course']==1]/5
+        y[x['studies_Full-time studies']==1] = 0
+        y[x['studies_Day course']==1] = 4*y[x['studies_Day course']==1]/5
         y = np.round(y)
 
         return y
@@ -373,13 +376,11 @@ class EducationNumSampler(Sampler):
         education
         
     """
-    def __init__(self, educ_map, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
-        self.educ_map = educ_map
-        
     def sample(self, x):
-        y = np.array([self.educ_map[v] for v in list(x.values.ravel())]).ravel()
+        y = np.array([EDUC_MAP[v] for v in list(x.values.ravel())]).ravel()
         
         return y
     
@@ -389,27 +390,22 @@ class EducationTransition(Sampler):
     Relies on access to columns in sampling:
     
         education#prev
-        training#prev
+        studies#prev
         age
     """
-    def __init__(self,  educ_map, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
-        self.educ_map = educ_map
+    
         
     def sample(self, x):
         
         educ_prev = inv_dummies(x, columns='education#prev')['education#prev']
         
-        educ_num = np.array([self.educ_map[v] for v in list(educ_prev.values)]).ravel()
-        rev_map = dict([(v,k) for k,v in self.educ_map.items()])
-        
-        # Transitions only based on age
-        #p = 0.01*(x['age'] < 40) + 0.03*(x['age'] < 30)
-        #trans = np.random.rand(p.shape[0]) < p
+        educ_num = np.array([EDUC_MAP[v] for v in list(educ_prev.values)]).ravel()
+        rev_map = dict([(v,k) for k,v in EDUC_MAP.items()])
        
-        # Transitions based on training
-        p = 0.9*(x['training#prev_Full-time studies']==1) + 0.05*(x['training#prev_Evening course']==1)
+        # Transitions based on studies
+        p = 0.9*(x['studies#prev_Full-time studies']==1) + 0.05*(x['studies#prev_Evening course']==1)
         trans = np.random.rand(p.shape[0]) < p
         
         educ_new = np.clip(educ_num + trans, 1, 16)
@@ -462,7 +458,7 @@ class MaritalStatusTransition(Sampler):
     Relies on access to columns in sampling:
         age
         marital-status#prev
-        training#prev
+        studies#prev
         
     """
     def __init__(self,  a_stay=0, **kwargs):
@@ -502,7 +498,7 @@ class MaritalStatusTransition(Sampler):
                 MS[l] = 0
         MS = MS[self.labels].values
         
-        study = 1*((x['training#prev']=='Full-time studies')&(x['marital-status#prev']=='Never-married')).values.reshape(-1,1)
+        study = 1*((x['studies#prev']=='Full-time studies')&(x['marital-status#prev']=='Never-married')).values.reshape(-1,1)
         study_factor = np.ones((n,len(M.classes_))) + study*np.array([[2, 0.5, 1, 1, 1]]*n)
                                
         p_age_study = p_age*study_factor
@@ -611,7 +607,7 @@ class OccupationTransition(Sampler):
 
         n = x.shape[0]
         p_stay = np.ones(n)*self.p_stay
-        p_stay[x['training#prev_Full-time studies'].astype(int)] /= 4
+        p_stay[x['studies#prev_Full-time studies'].astype(int)] /= 4
         
         stay = 1*(np.random.rand(n) < p_stay)
         

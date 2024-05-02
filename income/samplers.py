@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import inspect 
 
 from sklearn.linear_model import LinearRegression, Ridge, LogisticRegression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
@@ -217,11 +218,34 @@ class GaussianRegressionSampler(BaseEstimator, Sampler):
         self.fitted = True
         
         return self
+
+
+class GaussianRandomForestSampler(GaussianRegressionSampler):
+    
+    def __init__(self, round_result=False, bounds=None, std_mod=1., **kwargs):
+
+        rf_args = inspect.signature(RandomForestRegressor.__init__).parameters.keys()
+        args = {k:v for k,v in kwargs.items() if k in rf_args}
+        estimator = RandomForestRegressor(**args)
+
+        super().__init__(estimator=estimator, round_result=round_result, bounds=bounds, std_mod=std_mod, **kwargs)
+
     
 class ZeroOrGaussianRegressionSampler(BaseEstimator, Sampler):
     
     def __init__(self, zero_estimator, estimator, round_result=False, bounds=None, std_mod=1., **kwargs):
         super().__init__(**kwargs)
+
+        if type(zero_estimator) == str: 
+            if zero_estimator == 'LogisticRegression':
+                zero_estimator = LogisticRegression()
+            else: 
+                raise Exception('Unknowon classifier \'%s\'. Aborting' % zero_estimator)
+        if type(estimator) == str: 
+            if estimator == 'Ridge':
+                estimator = Ridge()
+            else: 
+                raise Exception('Unknowon classifier \'%s\'. Aborting' % estimator)
 
         self.zero_estimator = zero_estimator
         self.estimator = estimator

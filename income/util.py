@@ -1,12 +1,49 @@
+import os
 import numpy as np
 import pandas as pd
+import argparse
+import yaml
 import time
+import pickle as pkl
 
 from sklearn.base import TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import make_column_selector as selector
+
+def dict_to_namespace(d):
+    """ Converts a dictionary (recursively) to an argparse namespace
+    """
+    if type(d) is dict:
+        for k,v in d.items():
+            d[k] = dict_to_namespace(v)
+        return argparse.Namespace(**d)
+    else:
+        return d
+
+
+def load_config(config_file):
+    """ Loads a Yaml configuration file and converts it to namespace form
+    """
+    with open(config_file, 'r') as file:
+       cfg = dict_to_namespace(yaml.safe_load(file))
+
+    return cfg
+
+def save_model(clf, path, label):
+    """ Saves a simulator model
+    """
+    os.makedirs(path, exist_ok=True)
+    model_file = os.path.join(path, label+'.pkl')
+    pkl.dump(clf, open(model_file, 'wb'))
+
+def load_model(path, label):
+    """ Loads a simulator model
+    """
+    model_file = os.path.join(path, label+'.pkl')
+    clf = pkl.load(open(model_file, 'rb'))
+    return clf 
 
 
 class SubsetTransformer(TransformerMixin):
@@ -181,6 +218,9 @@ def inv_dummies(df, columns, separator='_'):
         return out
 
 class Transformation():
+    """
+    @TODO: Change to sklearn pipeline?
+    """
 
     def __init__(self):
         self.c_dummies = {}

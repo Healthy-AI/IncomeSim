@@ -13,7 +13,6 @@ class MarkovARM():
     
     """
     
-    
     def __init__(self, transformation=None, sequential_data=False):
         """
         Constructor

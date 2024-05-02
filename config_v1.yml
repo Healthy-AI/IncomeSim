@@ -12,10 +12,11 @@ simulator:
   seed: 0
 
 samples:
+  label: income_scm.v1
   seed: 0
   path: samples/
   policy: default # or 'full', 'no'
-  n_samples: 50000
+  n_samples: 1000
   horizon: 10
 
 variables:
@@ -63,7 +64,7 @@ variables:
     seq_sampler: None
 
   education:
-    parents: [age, race, sex]
+    parents: [age, race, sex, native-country]
     sampler: 
       type: LogisticSampler
       multi_class: multinomial
@@ -84,7 +85,7 @@ variables:
     seq_transform_input: False 
 
   workclass:
-    parents: [age, education, race, sex]
+    parents: [age, education, race, sex, native-country]
     sampler: 
       type: LogisticSampler
       multi_class: multinomial
@@ -96,7 +97,7 @@ variables:
     seq_transform_input: False 
 
   marital-status:
-    parents: [age, education, workclass, race]
+    parents: [age, education, workclass, race, native-country]
     sampler: 
       type: LogisticSampler
       multi_class: multinomial
@@ -110,16 +111,16 @@ variables:
 
   # @TODO: Make dependent on short-term study too
   occupation:
-    parents: [age, education, workclass, race, sex]
+    parents: [age, education, workclass, race, sex, native-country]
     sampler: 
       type: LogisticSampler
       multi_class: multinomial
     transform_input: True
-    seq_parents_curr: [age, education, workclass, race, sex]
+    seq_parents_curr: [age, education, workclass, race, sex, native-country]
     seq_parents_prev: [occupation, studies]
     seq_sampler: 
       type: OccupationTransition
-      sampler: '#init_sampler'
+      sampler: '#init_sampler' # If using init_sampler, must pass all parents both to sampler and seq_sampler
       p_stay: 0.9
     seq_transform_input: True 
 
@@ -178,7 +179,7 @@ variables:
     seq_sampler: 
       type: StudiesTransition
       sampler: '#init_sampler'
-    seq_transform_input: =False
+    seq_transform_input: False
 
   income:
     parents: [hours-per-week, age, education, workclass, marital-status, occupation, race, sex, capital-net, studies]
