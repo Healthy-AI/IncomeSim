@@ -23,7 +23,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # Load data
-    D_tr, c_cat, c_num, c_out, c_features, educ_map = load_income_data(args.datadir)
+    D_tr, c_cat, c_num, c_out, c_features = load_income_data(args.datadir)
     
     # Transformation
     T = SubsetTransformer()
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     
     # Create ARM model
     print('Initializing ARM model ...')
-    A = init_income_ARM(T, educ_map)
+    A = init_income_ARM(T)
 
     # Fit to observed data 
     warnings.filterwarnings("ignore", category=ConvergenceWarning)

@@ -15,8 +15,8 @@ samples:
   label: income_scm.v1
   seed: 0
   path: samples/
-  policy: default # or 'full', 'no'
-  n_samples: 1000
+  policy: ['default', 'full', 'no']  # or 'full', 'no'
+  n_samples: 10000
   horizon: 10
 
 variables:
@@ -68,7 +68,7 @@ variables:
     sampler: 
       type: LogisticSampler
       multi_class: multinomial
-    seq_parents_curr: [age]
+    seq_parents_curr: []
     seq_parents_prev: [education, studies]
     seq_sampler: 
       type: EducationTransition
