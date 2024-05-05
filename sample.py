@@ -18,7 +18,7 @@ def sample(cfg):
     if type(policies) == str:
         policies = [policies]
 
-    # Sample from all target policies
+    # Sample from all target policies _with the same starting state (due to the seed)_
     for pol in policies: 
     
         # Load simulator
@@ -41,7 +41,7 @@ def sample(cfg):
         else:
             raise Exception('Unknown sampling policy \'%s\'. Aborting.' % pol)
 
-        # Sample observations
+        # Sample observations with the same starting seed for all policies (counterfactuals)
         np.random.seed(cfg.samples.seed)
         print('Sampling observations ...')
         S = A.sample(cfg.samples.n_samples, T=cfg.samples.horizon)

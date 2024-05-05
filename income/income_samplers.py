@@ -391,7 +391,6 @@ class EducationTransition(Sampler):
     
         education#prev
         studies#prev
-        age
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

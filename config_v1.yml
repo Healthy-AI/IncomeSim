@@ -17,7 +17,7 @@ samples:
   path: samples/
   policy: ['default', 'full', 'no']  # or 'full', 'no'
   n_samples: 10000
-  horizon: 10
+  horizon: 5
 
 variables:
   time: 
