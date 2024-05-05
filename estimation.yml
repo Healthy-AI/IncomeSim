@@ -1,0 +1,46 @@
+experiment: 
+  label: v1.T5
+  seed: 0
+  target: CATE # ATE / OPE
+  outcome: 'income'
+  intervention: 'studies'
+  intervention0: 'No studies'
+  intervention1: 'Full-time studies'
+  covariates: ['age', 'capital-net', 'hours-per-week', 'education-num', 'native-country', 
+               'sex', 'race', 'education', 'workclass', 'occupation', 'marital-status', 
+               'relationship']
+
+results:
+  base_path: results/
+
+selection: 
+  type: random # grid/random
+  n_iter: 10 # Used by random sampler
+  folds: 5
+
+estimators: 
+  #ols:
+  #  label: 'OLS'
+  t-ridge: 
+    label: 'T-learner (Ridge)'
+    estimator: 'T-learner'
+    estimator0: ['ridge']
+    estimator1: ['ridge']
+    estimator0__alpha: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
+    estimator1__alpha: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
+
+  t-rfr: 
+    label: 'T-learner (RandomForestRegressor)'
+    estimator: 'T-learner'
+    estimator0: ['rfr']
+    estimator1: ['rfr']
+    estimator0__min_samples_leaf: [10, 50, 100]
+    estimator1__min_samples_leaf: [10, 50, 100]
+
+data: 
+  label: income
+  path: samples/
+  observational: income_scm.v1_default_n10000_T5_s0.pkl
+  control: income_scm.v1_no_n10000_T5_s0.pkl # Can be specified as None if the target is OPE
+  target: income_scm.v1_full_n10000_T5_s0.pkl
+
