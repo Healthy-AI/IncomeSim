@@ -10,6 +10,8 @@ from .samplers import *
 EDUC_MAP = {'Preschool': 1.0, '1st-4th': 2.0, '5th-6th': 3.0, '7th-8th': 4.0, '9th': 5.0, '10th': 6.0, '11th': 7.0, '12th': 8.0, 'HS-grad': 9.0, 
             'Some-college': 10.0, 'Assoc-voc': 11.0, 'Assoc-acdm': 12.0, 'Bachelors': 13.0, 'Masters': 14.0, 'Prof-school': 15.0, 'Doctorate': 16.0}
 
+STUDIES_MAP = {'No studies': 0, 'Evening course': 1, 'Day course': 2, 'Full-time studies': 3}
+
 class StudiesSampler(Sampler):
     """
     
@@ -23,8 +25,10 @@ class StudiesSampler(Sampler):
     
     classes_ = ['No studies', 'Evening course', 'Day course', 'Full-time studies']
 
-    def __init__(self, **kwargs):
+    def __init__(self, intervention=None, **kwargs):
         super().__init__(**kwargs)
+
+        self.intervention=intervention
         
     def fit(self, x, y):     
         """ No data, so nothing to fit """
@@ -35,37 +39,48 @@ class StudiesSampler(Sampler):
     def sample_proba(self, x):
         n = x.shape[0]
         
-        # Overall, no studies and full-time studies most common. Evening courses less
         # Order: 'No studies', 'Evening course', 'Day course', 'Full-time studies'
-        c_const = np.array([[7., -5., -3.5,  2.]])
-        c_age   = np.array([[2., 1., 0., -.3]])
-        
-        c_own_child  = np.array([[3., 0., 0., -10]])
-        
-        lg_age = np.dot(x[['age']]-25, c_age)
-        lg_oc = np.dot((x[['relationship']]=='Own-child').astype(int), c_own_child)
-        
-        #Preschool': 1.0, '1st-4th': 2.0, '5th-6th': 3.0, '7th-8th': 4.0, '9th': 5.0, '10th': 6.0, '11th': 7.0, '12th': 8.0, 'HS-grad': 9.0, 'Some-college': 10.0, 'Assoc-voc': 11.0, 'Assoc-acdm': 12.0, 'Bachelors': 13.0, 'Masters': 14.0, 'Prof-school': 15.0, 'Doctorate': 16.0
 
-        # More likely to do full-time studies if mid-degree
-        c_mid = np.array([[0., 0., 0., 5.]])
-        mid_studies = x[['education-num']].isin([1,2,3,4,5,6,7,8,10,11,12]).astype(int)
-        lg_mid = np.dot(mid_studies, c_mid)
-        
-        # Less likely to study if just finished degree
-        c_bach = np.array([[0., -4, -4, -4]])
-        bach_studies = (x[['education']]=='Bachelors').astype(int)
-        lg_bach = np.dot(bach_studies, c_bach)
-        
-        c_hsg = np.array([[0., -2, -2, -2]])
-        hs_studies = (x[['education']]=='HS-grad').astype(int)
-        lg_hsg = np.dot(hs_studies, c_hsg)
-        
-        lg = lg_age + lg_oc + lg_mid + lg_bach + lg_hsg + c_const
-        
-        t = 1.2
-        l = lambda z, t : 1./(1+np.exp(-z/t))
-        p = l(lg,t)/l(lg,t).sum(axis=1,keepdims=True)
+        # Default policy
+        # Overall, no studies and full-time studies most common. Evening courses less
+        if self.intervention is None: 
+
+            c_const = np.array([[7., -5., -3.5,  2.]])
+            c_age   = np.array([[2., 1., 0., -.3]])
+            
+            c_own_child  = np.array([[3., 0., 0., -10]])
+            
+            lg_age = np.dot(x[['age']]-25, c_age)
+            lg_oc = np.dot((x[['relationship']]=='Own-child').astype(int), c_own_child)
+            
+            #Preschool': 1.0, '1st-4th': 2.0, '5th-6th': 3.0, '7th-8th': 4.0, '9th': 5.0, '10th': 6.0, '11th': 7.0, '12th': 8.0, 'HS-grad': 9.0, 'Some-college': 10.0, 'Assoc-voc': 11.0, 'Assoc-acdm': 12.0, 'Bachelors': 13.0, 'Masters': 14.0, 'Prof-school': 15.0, 'Doctorate': 16.0
+
+            # More likely to do full-time studies if mid-degree
+            c_mid = np.array([[0., 0., 0., 5.]])
+            mid_studies = x[['education-num']].isin([1,2,3,4,5,6,7,8,10,11,12]).astype(int)
+            lg_mid = np.dot(mid_studies, c_mid)
+            
+            # Less likely to study if just finished degree
+            c_bach = np.array([[0., -4, -4, -4]])
+            bach_studies = (x[['education']]=='Bachelors').astype(int)
+            lg_bach = np.dot(bach_studies, c_bach)
+            
+            c_hsg = np.array([[0., -2, -2, -2]])
+            hs_studies = (x[['education']]=='HS-grad').astype(int)
+            lg_hsg = np.dot(hs_studies, c_hsg)
+            
+            lg = lg_age + lg_oc + lg_mid + lg_bach + lg_hsg + c_const
+            
+            t = 1.2
+            l = lambda z, t : 1./(1+np.exp(-z/t))
+            p = l(lg,t)/l(lg,t).sum(axis=1,keepdims=True)
+        else: 
+            p = np.zeros(len(STUDIES_MAP))
+            if self.intervention in STUDIES_MAP.keys():
+                p[STUDIES_MAP[self.intervention]] = 1
+            else: 
+                raise Exception('Unknown intervention %s' % self.intervention)
+            p = np.repeat(p.reshape(1,-1), n, axis=0)
         
         return p
 
@@ -83,10 +98,11 @@ class StudiesTransition(Sampler):
     Relies on access to columns in sampling:
         ...
     """
-    def __init__(self, sampler, **kwargs):
+    def __init__(self, sampler, intervention=None, **kwargs):
         super().__init__(**kwargs)
 
         self.sampler = sampler
+        self.intervention = intervention
 
     def fit(self, x, y):
         self.fitted = True
@@ -95,30 +111,53 @@ class StudiesTransition(Sampler):
 
     def sample(self, x):
         n = x.shape[0]
-        
-        p = self.sampler.sample_proba(x) # @TODO: Currently fine with sending 'time' column too
-        
         classes = self.sampler.classes_
-        
-        # Make it more likely to continue if in ongoing studies already
-        ongoing = ['11th','9th','Some-college','Assoc-acdm','7th-8th',
-                   'Assoc-voc','5th-6th','10th','Preschool','12th','1st-4th']
-        
-        p = p + 2*((x['studies#prev'] == 'Full-time studies')&(x['education'].isin(ongoing))) \
-                    .values.reshape([-1, 1])*np.array([[0, 0, 0, 1]])*p
-        
-        # Make it unlikely to start full-time studies from nothing
-        p = p - 0.7*(x['studies#prev'] != 'Full-time studies').values.reshape([-1, 1])*np.array([[0, 0, 0, 1]])*p
+        time = x['time'].values[0]
 
-        # Make it unlikely to start full-time studies or day course if income is already reasonably high
-        p = p - 0.7*(x['income#prev'] > 50000).values.reshape([-1, 1])*np.array([[0, 0, 0.7, 1]])*p
-        
-        # Make full-time studies impossible if doctorate
-        p = p - 1.*(x['education'] == 'Doctorate').values.reshape([-1, 1])*np.array([[0, 0, 0, 1]])*p
-        
-       
-        p = p/p.sum(axis=1,keepdims=True)
-        
+        # Set a constant intervention
+        if (not self.intervention is None) and (type(self.intervention) == str):
+
+            p = np.zeros(len(STUDIES_MAP))
+            if self.intervention in STUDIES_MAP.keys():
+                p[STUDIES_MAP[self.intervention]] = 1
+            else: 
+                raise Exception('Unknown intervention %s' % self.intervention)
+            
+            p = np.repeat(p.reshape(1,-1), n, axis=0)
+            
+        # Set a constant intervention at a specific time
+        elif (not self.intervention is None) and (type(self.intervention) == dict) and (self.intervention['T'] == time):
+
+            p = np.zeros(len(STUDIES_MAP))
+            if self.intervention['action'] in STUDIES_MAP.keys():
+                p[STUDIES_MAP[self.intervention['action']]] = 1
+            else: 
+                raise Exception('Unknown intervention %s' % self.intervention['action'])
+            
+            p = np.repeat(p.reshape(1,-1), n, axis=0)
+            
+        else: 
+            p = self.sampler.sample_proba(x) # @TODO: Currently fine with sending 'time' column too
+            
+            # Make it more likely to continue if in ongoing studies already
+            ongoing = ['11th','9th','Some-college','Assoc-acdm','7th-8th',
+                    'Assoc-voc','5th-6th','10th','Preschool','12th','1st-4th']
+            
+            p = p + 2*((x['studies#prev'] == 'Full-time studies')&(x['education'].isin(ongoing))) \
+                        .values.reshape([-1, 1])*np.array([[0, 0, 0, 1]])*p
+            
+            # Make it unlikely to start full-time studies from nothing
+            p = p - 0.7*(x['studies#prev'] != 'Full-time studies').values.reshape([-1, 1])*np.array([[0, 0, 0, 1]])*p
+
+            # Make it unlikely to start full-time studies or day course if income is already reasonably high
+            p = p - 0.7*(x['income#prev'] > 50000).values.reshape([-1, 1])*np.array([[0, 0, 0.7, 1]])*p
+            
+            # Make full-time studies impossible if doctorate
+            p = p - 1.*(x['education'] == 'Doctorate').values.reshape([-1, 1])*np.array([[0, 0, 0, 1]])*p
+            
+            # Normalize
+            p = p/p.sum(axis=1,keepdims=True)
+
         y = np.array([np.random.choice(classes, 1, p=p[i]) for i in range(n)]).ravel()
 
         return y
@@ -241,6 +280,8 @@ class IncomeSampler(Sampler):
         
         self.brier_ = None
         self.fitted = False
+        self.a = None
+        self.b = None
         
     def fit(self, x, y):     
 
@@ -270,7 +311,7 @@ class IncomeSampler(Sampler):
         yp = (yp*70000. / self.a).astype(np.int32) # To make mean 70000 before noise
         if update_params:
             self.b = yp.max()
-        yp = yp*(1-np.sqrt(self.brier_)) + (yp>0)*np.random.beta(1.2, 20.5, n)*self.b*np.sqrt(self.brier_)*2 # Add noise
+        yp = yp*(1-np.sqrt(self.brier_)) + (yp>0)*np.random.beta(1.2, 20.5, n)*self.b*np.sqrt(self.brier_) # Add noise
         
         yp[x['studies_Full-time studies']==1] = 0
         yp[x['studies_Day course']==1] = 4*yp[x['studies_Day course']==1]/5
@@ -287,11 +328,12 @@ class IncomeTransition(Sampler):
     Relies on access to columns in sampling:
         ...
     """
-    def __init__(self, sampler, prev_weight=0.9, **kwargs):
+    def __init__(self, sampler, prev_weight=0.95, max_raise_frac=0.04, **kwargs):
         super().__init__(**kwargs)
-
+    
         self.prev_weight = prev_weight
         self.sampler = sampler
+        self.max_raise_frac = max_raise_frac
 
     def fit(self, x, y):
 
@@ -305,18 +347,21 @@ class IncomeTransition(Sampler):
         c_curr = [c for c in x.columns if '#prev' not in c]
         x_curr = x[c_curr]
         
-        # @TODO: This one is transformed if not for hack in notebook!!!
+        # @TODO: Make sure this one is not transformed (not standard scaled)
         y_prev = x['income#prev']
         
         # If switching between full-time studies and not, don't look at previous income
         prev_weight = self.prev_weight*(x['studies#prev_Full-time studies'] == x['studies_Full-time studies'])
             
         y_new = self.sampler.sample(x_curr)
-        y_new += x['studies#prev_Full-time studies']*(np.random.rand(n)*5000)
+        #y_new += x['studies#prev_Full-time studies']*(np.random.rand(n)*2000) # No bonus for moving from full-time studies?
         y_new += x['studies#prev_Day course']*(np.random.rand(n)*1000)
         y_new += x['studies#prev_Evening course']*(np.random.rand(n)*100)
+
+        # Add a random yearly raise to the previous year's salary
+        raise_factor = 1+(np.random.rand(n)*self.max_raise_frac)
         
-        y = prev_weight*y_prev + (1-prev_weight)*y_new
+        y = prev_weight*(y_prev*raise_factor) + (1-prev_weight)*y_new
         
         y[x['studies_Full-time studies']==1] = 0
         y[x['studies_Day course']==1] = 4*y[x['studies_Day course']==1]/5

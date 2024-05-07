@@ -115,6 +115,8 @@ def run_experiment(cfg):
         df1 = pd.read_pickle(os.path.join(cfg.data.path, cfg.data.target))
 
         ope_result = cate_evaluation(clf, df0, df1, c_cov, c_int, c_out) #pd.DataFrame({}) #off_policy_evaluation(clf, cfg)
+        ope_result['experiment'] = cfg.experiment.label
+        ope_result['estimator'] = i
 
         # Store results for overview
         fit_estimators[i] = clf

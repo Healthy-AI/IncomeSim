@@ -10,6 +10,7 @@ def cate_evaluation(clf, df0, df1, c_cov, c_int, c_out):
     # Check that df0 and df1 are aligned by sampling random rows and check that they are the same
     for i in np.random.choice(n, 10):
         if np.any(df0.iloc[i][c_cov] != df1.iloc[i][c_cov]):
+            print(df0.iloc[i][c_cov] != df1.iloc[i][c_cov])
             raise Exception('Dataframes for control and treated counterfactuals not matched')
     
     y0 = clf.predict(df0[c_cov+[c_int]])

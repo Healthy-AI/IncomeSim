@@ -104,14 +104,18 @@ class MarkovARM():
         parents = dict([(k,v.parents.copy()) for k,v in self.vars_.items()])
         S = [k for k,v in parents.items() if len(v) == 0]
         L = []
+        
         while len(S) > 0:
             s = S.pop()
             L.append(s)
             cs = [c for c,v in parents.items() if s in v]
+            
             for c in cs:
                 parents[c].remove(s)
                 if len(parents[c])==0:
                     S.append(c)
+        
+
         return L
     
     def compute_order_seq_(self):
@@ -209,7 +213,6 @@ class MarkovARM():
             
         df['id'] = range(n_samples)
        
-        
         # Sample multiple time points if T>1
         if T>1:
             OS = self.compute_order_seq_()
@@ -218,7 +221,7 @@ class MarkovARM():
                 dft = pd.DataFrame({})
                 dft['id'] = range(n_samples)
     
-                # Sample variabvles
+                # Sample variables
                 for k in OS:
                     v = self.vars_[k]
                                         

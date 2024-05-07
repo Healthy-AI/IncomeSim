@@ -15,9 +15,12 @@ samples:
   label: income_scm.v1
   seed: 0
   path: samples/
-  policy: ['default', 'full', 'no']  # or 'full', 'no'
+  policy: ['default', 'full', 'no']  # 'default', or 'full', 'no'
   n_samples: 10000
   horizon: 5
+
+figures: 
+  path: figures/
 
 variables:
   time: 
@@ -191,6 +194,7 @@ variables:
     seq_sampler: 
       type: IncomeTransition
       sampler: '#init_sampler'
-      prev_weight: 0.9
+      prev_weight: 0.95
+      self.max_raise_frac: 0.04
     seq_transform_input: True
     seq_fit: False

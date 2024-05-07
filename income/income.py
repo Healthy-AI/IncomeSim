@@ -108,7 +108,7 @@ def init_income_ARM(T):
     # @TODO: Make dependent on short-term study too
     income_sampler = IncomeSampler()
     A.add_variable('income', c_income_feat, income_sampler, 
-                   seq_sampler=IncomeTransition(income_sampler, prev_weight=0.9), 
+                   seq_sampler=IncomeTransition(income_sampler, prev_weight=0.95, max_raise_frac=0.04), 
                    seq_parents_curr=c_income_feat, 
                    seq_parents_prev=['income', 'studies'],
                    transform_input=True, seq_transform_input=True, seq_fit=False)

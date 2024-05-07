@@ -31,11 +31,13 @@ def sample(cfg):
                 policy = 'No studies'
             elif pol == 'full':
                 policy = 'Full-time studies'
-            A.replace_variable('studies', [], ConstantSampler(policy), 
-                        seq_sampler=StudiesTransition(StudiesSampler()), 
+            s = StudiesSampler()
+            A.replace_variable('studies', ['age', 'sex', 'education','education-num', 'relationship'], StudiesSampler(), transform_input=False, 
+                        seq_sampler=StudiesTransition(s, intervention={'T': 1, 'action': policy}), 
                         seq_parents_curr=['age', 'sex', 'education', 'education-num', 'relationship', 'time'], 
                         seq_parents_prev=['studies','income'], 
                         seq_transform_input=False)
+                        #ConstantSampler(policy) --- replaces first time step. Need for income
         elif pol == 'default':
             pass
         else:
@@ -44,12 +46,15 @@ def sample(cfg):
         # Sample observations with the same starting seed for all policies (counterfactuals)
         np.random.seed(cfg.samples.seed)
         print('Sampling observations ...')
-        S = A.sample(cfg.samples.n_samples, T=cfg.samples.horizon)
-    
-        # Prep data
-        df0 = S[S['time']==0]
-        df = df0.copy().rename(columns={'income': 'income_current'})
+        S = A.sample(cfg.samples.n_samples, T=(cfg.samples.horizon+1)) # Adding 1 since throwing away first time step
 
+        # Prep data
+        df0 = S[S['time']==0] # To generate income without studies
+        df1 = S[S['time']==1] # To generate all the other variables, and the studies indicator
+        df = df1.copy().rename(columns={'income': 'income_current'})
+        df['income_current'] = df0['income'].values
+        #@TODO: Make df0 have studies from T=1 instead??
+        
         # Get the income from the last time point as the outcome variable
         Tend = cfg.samples.horizon-1
         df['income'] = S[S['time']==Tend]['income'].values

@@ -8,14 +8,14 @@ experiment:
   intervention1: 'Full-time studies'
   covariates: ['age', 'capital-net', 'hours-per-week', 'education-num', 'native-country', 
                'sex', 'race', 'education', 'workclass', 'occupation', 'marital-status', 
-               'relationship']
+               'relationship', 'income_current'] #@TODO Add income_current
 
 results:
   base_path: results/
 
 selection: 
   type: random # grid/random
-  n_iter: 10 # Used by random sampler
+  n_iter: 5 # Used by random sampler
   folds: 5
 
 estimators: 
