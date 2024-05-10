@@ -28,7 +28,7 @@ The slides for the lecture can be found on Canvas.
 
 ## Coding in the demo
 
-* Open [dat465_lecture_demo.ipynb](dat465_lecture_demo.ipynb) in Jupyter in a Python environment with the prerequisites above
+* Open [dat465_lecture_demo.ipynb](demos/dat465_lecture_demo.ipynb) in Jupyter in a Python environment with the prerequisites above
 ```bash
 jupyter notebook   
 ```
@@ -36,10 +36,10 @@ jupyter notebook
 ### ProbAI 23 lecture [2023]
 
 If you want to follow along in the notebook during the ProbAI lecture, you have two options: 
-1. Clone this repository and open [probai_lecture_github.ipynb](probai_lecture_github.ipynb) in Jupyter/Jupyter lab
+1. Clone this repository and open [probai_lecture_github.ipynb](demos/probai_lecture_github.ipynb) in Jupyter/Jupyter lab
 2. Work in Colab from this [notebook](https://colab.research.google.com/drive/1jlEsSYcCDiqhamshxhkdQ703KKWaJHL9?usp=sharing)
 
-The slides for the lecture can be found [here](ProbAI_Causal_machine_learning.pdf).
+The slides for the lecture can be found [here](demos/ProbAI_Causal_machine_learning.pdf).
 
 **Installing prerequisites**
 
