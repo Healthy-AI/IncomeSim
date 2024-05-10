@@ -22,8 +22,8 @@ data:
   label: income
   path: samples/
   observational: income_scm.v1_default_n50000_T5_s0.pkl
-  control: income_scm.v1_no_n50000_T5_s0.pkl # Can be specified as None if the target is OPE
-  target: income_scm.v1_full_n50000_T5_s0.pkl
+  control: income_scm.v1_no_n50000_T5_s1.pkl # Should have a different seed than the observational! # Can be specified as None if the target is OPE
+  target: income_scm.v1_full_n50000_T5_s1.pkl
 
 estimators: 
 
