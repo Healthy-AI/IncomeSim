@@ -202,7 +202,7 @@ Our dataset is hosted on the HealthyAI github organization and on healthyai.se. 
 
 ### When will the dataset be distributed?
 
-The dataset has been distributed as of June 13, 2023.
+An early version of the dataset has been distributed as of June, 2023. The IncomeSCM-1.0.CATE release has been available since June 7, 2024. 
 
 ### Will the dataset be distributed under a copyright or other intellectual property (IP) license, and/or under applicable terms of use (ToU)?
 
@@ -220,16 +220,13 @@ No.
 
 ## Maintenance
 
-_These questions are intended to encourage dataset creators to plan for dataset maintenance
-and communicate this plan with dataset consumers._
-
 ### Who is supporting/hosting/maintaining the dataset?
 
-Stanford Data Repository.
+Fredrik D. Johansson and the Healthy AI lab at Chalmers University of Technology. 
 
 ### How can the owner/curator/manager of the dataset be contacted (e.g., email address)?
 
-The data hosts can be contacted at https://library.stanford.edu/ask. The authors can be contacted at tians@staford.edu.
+The authors can be contacted at fredrik.johansson@chalmers.se
 
 ### Is there an erratum?
 
@@ -237,7 +234,7 @@ N/A
 
 ### Will the dataset be updated (e.g., to correct labeling errors, add new instances, delete instances)?
 
-Yes, in the event that errors are found, the dataset will be uploaded as a new version at the same location.
+Yes, in the event that errors are found, the dataset will be uploaded as a new version.
 
 ### If the dataset relates to people, are there applicable limits on the retention of the data associated with the instances (e.g., were individuals in question told that their data would be retained for a fixed period of time and then deleted)?
 
@@ -245,10 +242,12 @@ N/A
 
 ### Will older versions of the dataset continue to be supported/hosted/maintained?
 
-Yes, they will be hosted as previous versions on the Data Repository.
+Yes, they will be hosted as previous versions.
 
 ### If others want to extend/augment/build on/contribute to the dataset, is there a mechanism for them to do so?
 
-At the moment, there is no mechanism to build on to the dataset. However, in the future we may release new expanded versions of the dataset with opportunities for contribution.
+In the future, we may release new versions of the dataset with additional features or estimation tasks.
 
 ### Any other comments?
+
+Have fun!
