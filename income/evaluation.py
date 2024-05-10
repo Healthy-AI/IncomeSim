@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 
+from sklearn.utils import resample
 from sklearn.metrics import make_scorer, roc_auc_score, mean_squared_error, r2_score, root_mean_squared_error
 
-def cate_evaluation(clf, df0, df1, c_cov, c_int, c_out):
+def cate_evaluation(clf, df0, df1, c_cov, c_int, c_out, n_bootstrap=1000, alpha=0.05):
 
     n = df0.shape[0]
 
@@ -26,12 +27,36 @@ def cate_evaluation(clf, df0, df1, c_cov, c_int, c_out):
                "RMSE": root_mean_squared_error, 
                "MSE": mean_squared_error}
 
-    R = { (k+'_CATE'):s(cate_sample, cate_est) for k, s in scoring.items() }
-    R['AE_ATE'] = np.abs(ate_est-ate_sample)
-    R['SE_ATE'] = np.abs(ate_est-ate_sample)**2
-    R['True_ATE'] = ate_sample
+    df = pd.DataFrame({'cate_est': cate_est, 'cate_sample': cate_sample})
+    
+    rows = []
+    for i in range(n_bootstrap):
+        dfr = resample(df, n_samples=df.shape[0])
 
-    df = pd.DataFrame({k:[v] for k,v in R.items()})
-    print(df)
+        ate_est_r    = dfr['cate_est'].mean()
+        ate_sample_r = dfr['cate_sample'].mean()
 
-    return df
+        # Cate measures
+        row = { ('CATE_%s_r' % k):s(dfr['cate_sample'], dfr['cate_est']) for k, s in scoring.items() }
+        row['ATE_AE_r'] = np.abs(ate_est_r - ate_sample_r)
+        row['ATE_SE_r'] = np.abs(ate_est_r - ate_sample_r)**2
+
+        rows.append(row)
+
+    Ra = pd.DataFrame(rows)
+    R = Ra.mean()
+    for c in Ra.columns: 
+        R[c+'_l'] = np.percentile(Ra[c], alpha/2*100)
+        R[c+'_u'] = np.percentile(Ra[c], (1-alpha/2) * 100)
+        
+    for k, s in scoring.items():
+        R['CATE_'+k] = s(cate_sample, cate_est)
+        
+    R['ATE_AE'] = np.abs(ate_est-ate_sample)
+    R['ATE_SE'] = np.abs(ate_est-ate_sample)**2
+    R['ATE_True'] = ate_sample
+
+    R = R.to_frame().T
+    R = R[np.sort(R.columns)]
+
+    return R

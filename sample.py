@@ -51,9 +51,16 @@ def sample(cfg):
         # Prep data
         df0 = S[S['time']==0] # To generate income without studies
         df1 = S[S['time']==1] # To generate all the other variables, and the studies indicator
-        df = df1.copy().rename(columns={'income': 'income_current'})
-        df['income_current'] = df0['income'].values
-        #@TODO: Make df0 have studies from T=1 instead??
+        df = df1.copy().rename(columns={'income': 'income_prev'})
+        df['income_prev'] = df0['income'].values
+        df['studies_prev'] = df0['studies'].values
+        
+        # Possible solutions to studies_prev being a confounder. Trying #4 first
+        #
+        # 1. Go back to not having current income among the covariates
+        # 2. Make StudiesTransition not depend on previous studies at the time of intervention
+        # 3. Create a separate income variable for the first time step that doesn't depend on studies
+        # 4. Add studies_prev to the adjustment set
         
         # Get the income from the last time point as the outcome variable
         Tend = cfg.samples.horizon-1
@@ -61,7 +68,7 @@ def sample(cfg):
         
         # Make categorical columns have the right type
         c_cols = ['native-country', 'sex', 'race', 'education', 
-                'studies', 'workclass', 'occupation', 'marital-status', 'relationship']
+                'studies', 'workclass', 'occupation', 'marital-status', 'relationship', 'studies_prev']
         df[c_cols] = df[c_cols].astype('category')
 
         # Drop index columns

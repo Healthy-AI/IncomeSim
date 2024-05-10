@@ -35,7 +35,7 @@ def visualize(cfg):
 
     # Compute CATE and plot
     cate = df1['income'] - df0['income']
-    plt.hist(cate, bins=20)
+    plt.hist(cate, bins=30)
     plt.xlabel('CATE (USD)')
     plt.ylabel('Number')
     save_crop_close(os.path.join(fdir, 'cate_histogram.pdf'))

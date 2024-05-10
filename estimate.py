@@ -84,7 +84,7 @@ def run_experiment(cfg):
         else: 
             raise Exception('Unknown selection type %s' % cfg.selection.type)
 
-        print('Performing cross-validation')
+        print('Performing cross-validation ...')
         cv.fit(df_obs[c_cov + [c_int]], df_obs[c_out])
 
         # Create results data frame
@@ -117,6 +117,9 @@ def run_experiment(cfg):
         ope_result = cate_evaluation(clf, df0, df1, c_cov, c_int, c_out) #pd.DataFrame({}) #off_policy_evaluation(clf, cfg)
         ope_result['experiment'] = cfg.experiment.label
         ope_result['estimator'] = i
+        ope_result = ope_result[['experiment', 'estimator'] + [c for c in ope_result.columns if not c in ['experiment', 'estimator']]]
+        r_path = os.path.join(results_dir, '%s.%s.ope_results.csv' % (cfg.experiment.label, i))
+        ope_result.to_csv(r_path) 
 
         # Store results for overview
         fit_estimators[i] = clf

@@ -10,6 +10,8 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 
+import xgboost as xgb
+
 
 def name_combiner(x,y):
     """ Used by column transformer for one-hot encoder """
@@ -37,8 +39,14 @@ def get_estimator(e):
     elif e in ['RandomForestRegressor', 'rfr']:
         return RandomForestRegressor()
 
+    elif e in ['XGBRegressor', 'xgbr']:
+        return xgb.XGBRegressor()
+
     elif e in ['T-learner', 'T_learner', 't_learner']:
         return T_learner()
+
+    elif e in ['S-learner', 'S_learner', 's_learner']:
+        return S_learner()
 
     else: 
         raise Exception('Unknown estimator %s' % e)
@@ -64,24 +72,55 @@ class PotentialOutcomeEstimator(BaseEstimator):
     def set_params(self, **params):
         """ Set the parameter of the estimator and base estimators """
 
-        if 'estimator0' in params: 
-            self.estimator0 = get_estimator(params['estimator0'])
-            del params['estimator0']
-
-        if 'estimator1' in params: 
-            self.estimator1 = get_estimator(params['estimator1'])
-            del params['estimator1']
-
         super().set_params(**params)
     
+class S_learner(PotentialOutcomeEstimator):
+    """ Implements the S-learner meta learner """ 
+
+    def __init__(self, base_estimator='ridge', c_int='intervention', c_out='outcome', c_adj=[], v_int0=0, v_int1=1):
+
+        self.base_estimator = get_estimator(base_estimator)
+        self.c_int = c_int
+        self.c_out = c_out
+        self.c_adj = c_adj
+        self.v_int0 = v_int0
+        self.v_int1 = v_int1
+        
+    def fit(self, x, y):
+        
+        adj = self.c_adj + [self.c_int] # Add intervention to adjustment columns
+        c_adjs = [c for c in x.columns if c in adj or c.partition('__')[0] in adj]
+
+        self.base_estimator.fit(x[c_adjs], y)
+
+        return self
+
+    def predict(self, x):
+
+        adj = self.c_adj + [self.c_int] # Add intervention to adjustment columns
+        c_adjs = [c for c in x.columns if c in adj or c.partition('__')[0] in adj]
+
+        yp = self.base_estimator.predict(x[c_adjs])
+
+        return yp
+
+    def set_params(self, **params):
+        """ Set the parameter of the estimator and base estimators """
+
+        # To enable setting base estimator parameter by string
+        if 'base_estimator' in params: 
+            self.base_estimator = get_estimator(params['base_estimator'])
+            del params['base_estimator']
+
+        super().set_params(**params)
 
 class T_learner(PotentialOutcomeEstimator):
     """ Implements the T-learner meta learner """ 
 
-    def __init__(self, estimator0='ridge', estimator1='ridge', c_int='intervention', c_out='outcome', c_adj=[], v_int0=0, v_int1=1):
+    def __init__(self, base_estimator0='ridge', base_estimator1='ridge', c_int='intervention', c_out='outcome', c_adj=[], v_int0=0, v_int1=1):
 
-        self.estimator0 = get_estimator(estimator0)
-        self.estimator1 = get_estimator(estimator1)
+        self.base_estimator0 = get_estimator(base_estimator0)
+        self.base_estimator1 = get_estimator(base_estimator1)
         self.c_int = c_int
         self.c_out = c_out
         self.c_adj = c_adj
@@ -101,8 +140,8 @@ class T_learner(PotentialOutcomeEstimator):
         if (I0.sum() == 0) or (I1.sum() ==0):
             raise Exception('One of the intervention options has 0 samples')
 
-        self.estimator0.fit(x[I0][c_adjs], y[I0])
-        self.estimator1.fit(x[I1][c_adjs], y[I1])
+        self.base_estimator0.fit(x[I0][c_adjs], y[I0])
+        self.base_estimator1.fit(x[I1][c_adjs], y[I1])
 
         return self
 
@@ -115,11 +154,25 @@ class T_learner(PotentialOutcomeEstimator):
 
         yp = np.zeros(x.shape[0])
         if I0.sum()>0:
-            yp[I0] = self.estimator0.predict(x[I0][c_adjs])
+            yp[I0] = self.base_estimator0.predict(x[I0][c_adjs])
         if I1.sum()>0:
-            yp[I1] = self.estimator1.predict(x[I1][c_adjs])
+            yp[I1] = self.base_estimator1.predict(x[I1][c_adjs])
 
         return yp
+
+    def set_params(self, **params):
+        """ Set the parameter of the estimator and base estimators """
+
+        # To enable setting base estimator parameter by string
+        if 'base_estimator0' in params: 
+            self.base_estimator0 = get_estimator(params['base_estimator0'])
+            del params['base_estimator0']
+
+        if 'base_estimator1' in params: 
+            self.base_estimator1 = get_estimator(params['base_estimator1'])
+            del params['base_estimator1']
+
+        super().set_params(**params)
 
 
 

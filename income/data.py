@@ -30,7 +30,6 @@ def load_income_data(folder='data/adult/', data_only=False):
     # Column names
     columns = ['age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'capital-gain', 'capital-loss', 'hours-per-week', 'native-country', 'income>50k']
     c_cat = ['workclass', 'education', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'native-country']
-    #c_num = ['age', 'education-num', 'capital-gain', 'capital-loss', 'hours-per-week']
     c_bin = ['income>50k']
     c_out = 'income>50k'
 

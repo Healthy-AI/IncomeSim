@@ -137,7 +137,8 @@ class StudiesTransition(Sampler):
             p = np.repeat(p.reshape(1,-1), n, axis=0)
             
         else: 
-            p = self.sampler.sample_proba(x) # @TODO: Currently fine with sending 'time' column too
+            # Probability of the initial state
+            p = self.sampler.sample_proba(x) 
             
             # Make it more likely to continue if in ongoing studies already
             ongoing = ['11th','9th','Some-college','Assoc-acdm','7th-8th',
