@@ -7,13 +7,6 @@ IncomeSim is a time-series simulator based on the [Adult dataset](http://archive
 * IncomeSim is written in Python 3 and based on the Scikit-learn package and the Adult dataset. 
 * Start by installing python modules ```pandas, numpy, scikit-learn, jupyter, matplotlib```
 
-For example using a virtual environment: 
-```bash
-virtualenv dat465
-source dat465/bin/activate
-pip install pandas numpy scikit-learn jupyter matplotlib
-```
-
 ## Papers using the data set 
 
 ## Lectures using the data set 
@@ -23,6 +16,13 @@ pip install pandas numpy scikit-learn jupyter matplotlib
 If you want to follow along in the notebook during the demo lecture
 1. Clone this repository
 2. Install prerequisites
+
+For example using a virtual environment: 
+```bash
+virtualenv dat465
+source dat465/bin/activate
+pip install pandas numpy scikit-learn jupyter matplotlib
+```
 
 The slides for the lecture can be found on Canvas.
 
