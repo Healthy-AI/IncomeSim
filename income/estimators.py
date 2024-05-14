@@ -2,8 +2,8 @@ import inspect
 import numpy as np
 
 from sklearn.base import BaseEstimator
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.metrics import roc_auc_score, mean_squared_error, r2_score, root_mean_squared_error
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -33,8 +33,14 @@ def get_estimator(e):
     if e in ['LinearRegression', 'ols']:
         return LinearRegression()
 
+    if e in ['LogisticRegression', 'lr']:
+        return LogisticRegression()
+
     elif e in ['Ridge', 'ridge']:
         return Ridge()
+
+    elif e in ['RandomForestClassifier', 'rfc']:
+        return RandomForestClassifier()
 
     elif e in ['RandomForestRegressor', 'rfr']:
         return RandomForestRegressor()
@@ -48,8 +54,100 @@ def get_estimator(e):
     elif e in ['S-learner', 'S_learner', 's_learner']:
         return S_learner()
 
+    elif e in ['IPWEstimator', 'ipw', 'IPW']:
+        return IPWEstimator()
+
     else: 
         raise Exception('Unknown estimator %s' % e)
+
+class IPWEstimator(BaseEstimator):
+    """ Implements the inverse propensity weighting (IPW) estimator of average outcome """ 
+
+    def __init__(self, base_estimator='lr', c_int='intervention', c_out='outcome', c_adj=[], weighted=True, v_int0=0, v_int1=1):
+        
+        self.base_estimator = get_estimator(base_estimator)
+        self.c_int = c_int
+        self.c_out = c_out
+        self.c_adj = c_adj
+        self.v_int0 = v_int0
+        self.v_int1 = v_int1
+        self.fitted = False
+        self.weighted = weighted
+        
+    def _estimate(self, X, t, y):
+        """ Estimates mean potential outcomes """ 
+        
+        e = self.base_estimator.predict_proba(X)[:,1]
+
+        n = X.shape[0]
+        n0 = (1-t).sum()
+        n1 = n-n0
+        
+        w0 = ((1-t)/(1-e))/n
+        w1 = (t/e)/n
+
+        if self.weighted:
+            w0 = w0/(w0.sum())
+            w1 = w1/(w1.sum())
+        
+        self.y0 = np.sum(w0*y)
+        self.y1 = np.sum(w1*y)
+        self.ate = self.y1 - self.y0
+
+        self.w = (t*w1 + (1-t)*w0)*n
+        
+        
+    def fit(self, x, y, sample_weight=None):
+        """ Fits a propensity model and estimates mean potential outcomes """ 
+
+        c_adjs = [c for c in x.columns if c in self.c_adj or c.partition('__')[0] in self.c_adj]
+        
+        X = x[c_adjs]
+        t = x[self.c_int + '__%s' % self.v_int1]
+        
+        self.base_estimator.fit(X, t)
+        self.fitted = True
+        
+        self._estimate(X, t, y)
+
+        return self
+        
+        
+    def predict(self, x):
+        """ Predicts the treatment using the propensity model """ 
+        c_adjs = [c for c in x.columns if c in self.c_adj or c.partition('__')[0] in self.c_adj]
+        X = x[c_adjs]
+        
+        return self.base_estimator.predict(X)
+
+    def predict_proba(self, x):
+        """ Predicts the treatment probability using the propensity model """ 
+        c_adjs = [c for c in x.columns if c in self.c_adj or c.partition('__')[0] in self.c_adj]
+        X = x[c_adjs]
+        
+        return self.base_estimator.predict_proba(X)
+
+    def predict_outcomes(self, x):
+        """ Predicts the potential outcomes given covariates and treatments in x """
+        c_adjs = [c for c in x.columns if c in self.c_adj or c.partition('__')[0] in self.c_adj]
+        
+        X = x[c_adjs]
+        t = x[self.c_int + '__%s' % self.v_int1]
+        
+        y = t*self.y1 + (1-t)*self.y0
+
+        return y
+
+    def set_params(self, **params):
+        """ Set the parameter of the estimator and base estimators """
+
+        # To enable setting base estimator parameter by string
+        if 'base_estimator' in params: 
+            self.base_estimator = get_estimator(params['base_estimator'])
+            del params['base_estimator']
+
+        super().set_params(**params)
+
 
 
 class PotentialOutcomeEstimator(BaseEstimator):
@@ -87,15 +185,17 @@ class S_learner(PotentialOutcomeEstimator):
         self.v_int1 = v_int1
         
     def fit(self, x, y):
+        """ Fits the base estimator """
         
         adj = self.c_adj + [self.c_int] # Add intervention to adjustment columns
-        c_adjs = [c for c in x.columns if c in adj or c.partition('__')[0] in adj]
+        c_adjs = [c for c in x.columns if c in adj or c.partition('__')[0] in adj] # @TODO: This won't warn if there are columns in adj not represented in columns
 
         self.base_estimator.fit(x[c_adjs], y)
 
         return self
 
     def predict(self, x):
+        """ Predicts the potential outcomes given covariates and treatments in x """
 
         adj = self.c_adj + [self.c_int] # Add intervention to adjustment columns
         c_adjs = [c for c in x.columns if c in adj or c.partition('__')[0] in adj]
@@ -114,6 +214,8 @@ class S_learner(PotentialOutcomeEstimator):
 
         super().set_params(**params)
 
+
+
 class T_learner(PotentialOutcomeEstimator):
     """ Implements the T-learner meta learner """ 
 
@@ -128,6 +230,7 @@ class T_learner(PotentialOutcomeEstimator):
         self.v_int1 = v_int1
         
     def fit(self, x, y):
+        """ Fits the base estimators """
         
         # @TODO: Could do the dicotomization here instead?
         # @TODO: For splitting keys if needed: key, delim, sub_key = key.partition("__")
@@ -146,6 +249,7 @@ class T_learner(PotentialOutcomeEstimator):
         return self
 
     def predict(self, x):
+        """ Predicts the potential outcomes given covariates and treatments in x """
 
         c_adjs = [c for c in x.columns if c in self.c_adj or c.partition('__')[0] in self.c_adj]
     

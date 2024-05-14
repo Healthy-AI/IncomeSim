@@ -16,7 +16,45 @@ selection:
   n_iter: 50 # Used by random sampler
   folds: 5
 
+data: 
+  label: income
+  path: samples/
+  observational: income_scm.v1_default_n10000_T5_s0.pkl
+  control: income_scm.v1_no_n10000_T5_s0.pkl # Can be specified as None if the target is OPE
+  target: income_scm.v1_full_n10000_T5_s0.pkl
+
+
 estimators: 
+  ipw-lr: 
+    label: 'IPWEstimator (LR)'
+    estimator: 'IPWEstimator'
+    weighted: [False]
+    base_estimator: ['lr']
+    base_estimator__C: [[0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]]
+
+backup: 
+
+  ipw-rfc: 
+    label: 'IPWEstimator (RandomForestClassifier)'
+    estimator: 'IPWEstimator'
+    weighted: [False]
+    base_estimator: ['rfc']
+    base_estimator__min_samples_leaf: [5, 10, 20, 50, 100]
+
+  ipww-lr: 
+    label: 'IPWEstimator (LR)'
+    estimator: 'IPWEstimator'
+    weighted: [True]
+    base_estimator: ['lr']
+    base_estimator__C: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
+
+  ipww-rfc: 
+    label: 'IPWEstimator (RandomForestClassifier)'
+    estimator: 'IPWEstimator'
+    weighted: [True]
+    base_estimator: ['rfc']
+    base_estimator__min_samples_leaf: [5, 10, 20, 50, 100]
+
 
   t-xgbr: 
     label: 'T-learner (XGBRegressor)'
@@ -65,13 +103,6 @@ estimators:
     base_estimator__tree_method: ['hist']
     base_estimator__eta: [0.1, 0.3, 0.5, 0.7]
     base_estimator__max_depth: [3, 5, 7, 9]
-
-data: 
-  label: income
-  path: samples/
-  observational: income_scm.v1_default_n10000_T5_s0.pkl
-  control: income_scm.v1_no_n10000_T5_s0.pkl # Can be specified as None if the target is OPE
-  target: income_scm.v1_full_n10000_T5_s0.pkl
 
 
 

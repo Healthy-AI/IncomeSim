@@ -17,6 +17,8 @@ from income.income import *
 from income.estimators import *
 from income.evaluation import *
 
+PROTECTED_KEYS = ['label', 'estimator', 'scoring']
+
 def run_experiment(cfg):
     """ Estimate the causal effect of interventions and evaluate the results
     """
@@ -42,10 +44,11 @@ def run_experiment(cfg):
     c_cat = [k for k in c_cov if df_obs[k].dtype == 'category']
 
     # Parse estimators and set up parameter grids
+    
     estimators = {}
     est = cfg.estimators.__dict__
     for k,v in est.items():
-        param_grid = {('estimator__'+p):a for p,a in v.__dict__.items() if not p in ['label', 'estimator']}
+        param_grid = {('estimator__'+p):a for p,a in v.__dict__.items() if not p in PROTECTED_KEYS}
         param_grid['estimator__c_int'] = [c_int]
         param_grid['estimator__c_out'] = [c_out]
         param_grid['estimator__c_adj'] = [c_cov]
@@ -141,8 +144,9 @@ if __name__ == "__main__":
     
     # Parse arguments
     parser = argparse.ArgumentParser(description='Estimate causal effects from IncomeSim samples')
-    parser.add_argument('-c', '--config', type=str, dest='config', help='Path to config file', default='estimation.yml')
+    parser.add_argument('-c', '--config', type=str, dest='config', help='Path to config file', default='configs/estimation.yml')
     args = parser.parse_args()
+
 
     # Load config file
     cfg = load_config(args.config)

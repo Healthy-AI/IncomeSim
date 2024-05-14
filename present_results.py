@@ -33,6 +33,10 @@ def present_results(cfg):
     df.to_csv(r_path)
 
     TABLE_LABELS = {
+        'ipw-lr': 'IPW (LR)',
+        'ipw-rfc': 'IPW (RF)',
+        'ipww-lr': 'IPW-W (LR)',
+        'ipww-rfc': 'IPW-W (RF)',
         's-ridge': 'S-learner (Ridge)',
         's-xgbr':  'S-learner (XGB)',
         's-rfr': 'S-learner (RF)',

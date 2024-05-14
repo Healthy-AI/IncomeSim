@@ -27,6 +27,37 @@ data:
 
 estimators: 
 
+  ipw-lr: 
+    label: 'IPWEstimator (LR)'
+    estimator: 'IPWEstimator'
+    scoring: ['prop_auc']
+    weighted: [False]
+    base_estimator: ['lr']
+    base_estimator__C: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
+
+backup: 
+
+  ipw-rfc: 
+    label: 'IPWEstimator (RandomForestClassifier)'
+    estimator: 'IPWEstimator'
+    weighted: [False]
+    base_estimator: ['rfc']
+    base_estimator__min_samples_leaf: [5, 10, 20, 50, 100]
+
+  ipww-lr: 
+    label: 'IPWEstimator (LR)'
+    estimator: 'IPWEstimator'
+    weighted: [True]
+    base_estimator: ['lr']
+    base_estimator__C: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
+
+  ipww-rfc: 
+    label: 'IPWEstimator (RandomForestClassifier)'
+    estimator: 'IPWEstimator'
+    weighted: [True]
+    base_estimator: ['rfc']
+    base_estimator__min_samples_leaf: [5, 10, 20, 50, 100]
+
   t-xgbr: 
     label: 'T-learner (XGBRegressor)'
     estimator: 'T-learner'
@@ -74,9 +105,3 @@ estimators:
     base_estimator__tree_method: ['hist']
     base_estimator__eta: [0.1, 0.3, 0.5, 0.7]
     base_estimator__max_depth: [3, 5, 7, 9]
-
-
-
-
-
-
