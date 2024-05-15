@@ -18,6 +18,11 @@ IncomeSim is a time-series simulator based on the [Adult dataset](http://archive
 python fit.py [-c CONFIG_FILE]
 ```
 * The default config file is configs/config_v1.yml
+* To sample from the simulator, use the script ```sample.py```
+```
+python fit.py [-c CONFIG_FILE]
+```
+* This also uses the same default config file, which specifies which fitted model to use, how many samples are used, and from which (counterfactual) policy to sample. By default, 50 000 samples are generated from the "default" (observational) "full" and "no" policies. 
 
 ## Papers using the data set 
 
