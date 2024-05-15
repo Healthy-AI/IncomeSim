@@ -27,7 +27,10 @@ python sample.py [-c CONFIG_FILE]
 
 ## Using the data set
 
-* The IncomeSCM.V1.CATE data set is sampled from the simulator fit with the ```config_v1.yml``` file.
+* The IncomeSCM.V1.CATE data set is sampled from the simulator fit with the ```config_v1.yml``` file. The main data set files are:
+  * ```income_scm.v1_default_n50000_T5_s0.pkl``` (V1, default policy, 50 000 samples, horizon T=5, seed=0)
+  * ```income_scm.v1_no_n50000_T5_s1.pkl``` (V1, "Full" policy, 50 000 samples, horizon T=5, seed=1)
+  * ```income_scm.v1_full_n50000_T5_s1.pkl``` (V1, "No" policy, 50 000 samples, horizon T=5, seed10)
 
 # Papers using the data set 
 
