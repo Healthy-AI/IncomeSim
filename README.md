@@ -1,17 +1,42 @@
-# IncomeSim
+# IncomeSCM
 
-IncomeSim is a time-series simulator based on the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult).
+IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult).
 
 ## Prerequisites
 
 * IncomeSim is written in Python 3 and based on the Scikit-learn package and the Adult dataset. 
-* Start by installing python modules ```pandas, numpy, scikit-learn, jupyter, matplotlib```
+* Start by installing python modules ```pandas, numpy, scikit-learn, jupyter, matplotlib, yaml, xgboost```, for example in a virtual environment. Below, we list the versions used during development and testing. 
+  ```
+  pip install scikit-learn==1.4.1.post1 pandas==2.0.1 PyYAML==6.0 xgboost==2.0.0
+  ```
 
-## Papers using the data set 
+## Using the simulator
 
-## Lectures using the data set 
+* The IncomeSCM simulator is fit to the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult) data set.
+* To fit the simulator, run the python script ```fit.py```
+```
+python fit.py [-c CONFIG_FILE]
+```
+* The default config file is configs/config_v1.yml
+* To sample from the simulator, use the script ```sample.py```
+```
+python sample.py [-c CONFIG_FILE]
+```
+* This also uses the same default config file, which specifies which fitted model to use, how many samples are used, and from which (counterfactual) policy to sample. By default, 50 000 samples are generated from the "default" (observational) "full" and "no" policies.
+* The samples are stored (by default) in ```./samples/[SAMPLE_FILE_NAME].pkl```. The file name is determined by the version labels specified in the config file.
 
-### DAT465 Lecture [2023]
+## Using the data set
+
+* The IncomeSCM.V1.CATE data set is sampled from the simulator fit with the ```config_v1.yml``` file. The main data set files are:
+  * ```income_scm.v1_default_n50000_T5_s0.pkl``` (V1, default policy, 50 000 samples, horizon T=5, seed=0)
+  * ```income_scm.v1_no_n50000_T5_s1.pkl``` (V1, "Full" policy, 50 000 samples, horizon T=5, seed=1)
+  * ```income_scm.v1_full_n50000_T5_s1.pkl``` (V1, "No" policy, 50 000 samples, horizon T=5, seed=1)
+
+# Papers using the data set 
+
+# Lectures using the data set 
+
+## DAT465 Lecture [2023]
 
 If you want to follow along in the notebook during the demo lecture
 1. Clone this repository
@@ -26,14 +51,14 @@ pip install pandas numpy scikit-learn jupyter matplotlib
 
 The slides for the lecture can be found on Canvas.
 
-## Coding in the demo
+### Coding in the demo
 
 * Open [dat465_lecture_demo.ipynb](demos/dat465_lecture_demo.ipynb) in Jupyter in a Python environment with the prerequisites above
 ```bash
 jupyter notebook   
 ```
 
-### ProbAI 23 lecture [2023]
+## ProbAI 23 lecture [2023]
 
 If you want to follow along in the notebook during the ProbAI lecture, you have two options: 
 1. Clone this repository and open [probai_lecture_github.ipynb](demos/probai_lecture_github.ipynb) in Jupyter/Jupyter lab
