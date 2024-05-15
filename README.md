@@ -4,10 +4,14 @@ IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive
 
 ## Prerequisites
 
-* IncomeSim is written in Python 3 and based on the Scikit-learn package and the Adult dataset. 
-* Start by installing python modules ```pandas, numpy, scikit-learn, jupyter, matplotlib, yaml, xgboost```, for example in a virtual environment. Below, we list the versions used during development and testing. 
+* IncomeSCM is written in Python 3 and based on the Scikit-learn package and the Adult dataset. 
+* To reproduce results or use the simulator, start by installing python modules ```pandas, numpy, scikit-learn, jupyter, matplotlib, yaml, xgboost```, for example in a virtual environment. Below, we list the versions used during development and testing. 
   ```
   pip install scikit-learn==1.4.1.post1 pandas==2.0.1 PyYAML==6.0 xgboost==2.0.0
+  ```
+* Download the IncomeSCM simulator
+  ```
+  git clone git@github.com:Healthy-AI/IncomeSim.git
   ```
 
 ## Using the simulator
@@ -27,10 +31,11 @@ python sample.py [-c CONFIG_FILE]
 
 ## Using the data set
 
-* The IncomeSCM.V1.CATE data set is sampled from the simulator fit with the ```config_v1.yml``` file. The main data set files are:
-  * ```income_scm.v1_default_n50000_T5_s0.pkl``` (V1, default policy, 50 000 samples, horizon T=5, seed=0)
-  * ```income_scm.v1_no_n50000_T5_s1.pkl``` (V1, "Full" policy, 50 000 samples, horizon T=5, seed=1)
-  * ```income_scm.v1_full_n50000_T5_s1.pkl``` (V1, "No" policy, 50 000 samples, horizon T=5, seed=1)
+* The IncomeSCM-1.0.CATE data set is sampled from the simulator fit with the ```config_v1.yml``` file. The main data set files are:
+  * ```income_scm-1.0.CATE_default.pkl``` Alias for (V1, default policy, 50 000 samples, horizon T=5, seed=0)
+  * ```income_scm-1.0.CATE_no.pkl``` Alias for (V1, "Full" policy, 50 000 samples, horizon T=5, seed=1)
+  * ```income_scm-1.0.CATE_full.pkl``` Alias for (V1, "No" policy, 50 000 samples, horizon T=5, seed=1)
+  * All three files are contained in ```income_scm-1.0.CATE.zip```
 
 # Papers using the data set 
 
