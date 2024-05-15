@@ -1,16 +1,36 @@
 import os, sys
+import urllib.request
 import pandas as pd
 import numpy as np
+import zipfile
+import subprocess
 
 from .income_samplers import *
 
-def load_income_data(folder='data/adult/', data_only=False):
+ADULT_URL = 'https://archive.ics.uci.edu/static/public/2/adult.zip'
+
+def download_adult_data(folder):
+    """ Downloads the Adult data set, extracts it and removes the file """
+    fname = 'adult.tmp.zip'
+
+    os.makedirs(folder, exist_ok=True)
+    fpath = os.path.join(folder, fname)
+    
+    subprocess.run(["curl", ADULT_URL, "-o", fpath]) 
+
+    with zipfile.ZipFile(fpath, 'r') as zip_ref:
+        zip_ref.extractall(folder)
+
+    os.remove(fpath)
+
+def load_income_data(folder='data/adult/', data_only=False, download=True):
     """
     Loads the "Adult" income dataset and returns
 
     args
         folder: The folder where the data files are
         data_only: If true, returns only the dataframe for the training portion
+        download: If true, downloads the data set from UCI if it doesn't exist
 
     returns
         D_tr: Training dataframe
@@ -23,6 +43,10 @@ def load_income_data(folder='data/adult/', data_only=False):
     train_file = os.path.join(folder, 'adult.data')
     col_file = os.path.join(folder, 'adult.names')
     test_file = os.path.join(folder, 'adult.test')
+
+    # Check if files exist
+    if not os.isfile(train_file) or not os.isfile(col_file) or not os.isfile(test_file):
+        download_adult_data(folder)
 
     # Load data
     D_tr = pd.read_csv(train_file, header=None, delimiter=', ', engine='python')

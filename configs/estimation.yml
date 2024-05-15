@@ -30,12 +30,17 @@ estimators:
   ipw-lr: 
     label: 'IPWEstimator (LR)'
     estimator: 'IPWEstimator'
-    scoring: ['prop_auc']
     weighted: [False]
     base_estimator: ['lr']
     base_estimator__C: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
+ 
 
-backup: 
+  ipw-lr: 
+    label: 'IPWEstimator (LR)'
+    estimator: 'IPWEstimator'
+    weighted: [False]
+    base_estimator: ['lr']
+    base_estimator__C: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
 
   ipw-rfc: 
     label: 'IPWEstimator (RandomForestClassifier)'
@@ -58,17 +63,11 @@ backup:
     base_estimator: ['rfc']
     base_estimator__min_samples_leaf: [5, 10, 20, 50, 100]
 
-  t-xgbr: 
-    label: 'T-learner (XGBRegressor)'
-    estimator: 'T-learner'
-    base_estimator0: ['xgbr']
-    base_estimator1: ['xgbr']
-    base_estimator0__tree_method: ['hist']
-    base_estimator1__tree_method: ['hist']
-    base_estimator0__eta: [0.1, 0.3, 0.5, 0.7]
-    base_estimator1__eta: [0.1, 0.3, 0.5, 0.7]
-    base_estimator0__max_depth: [3, 5, 7, 9]
-    base_estimator1__max_depth: [3, 5, 7, 9]
+  s-ridge: 
+    label: 'S-learner (Ridge)'
+    estimator: 'S-learner'
+    base_estimator: ['ridge']
+    base_estimator__alpha: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
 
   t-ridge: 
     label: 'T-learner (Ridge)'
@@ -78,17 +77,12 @@ backup:
     base_estimator0__alpha: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
     base_estimator1__alpha: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
 
-  s-ridge: 
-    label: 'S-learner (Ridge)'
-    estimator: 'S-learner'
-    base_estimator: ['ridge']
-    base_estimator__alpha: [0.01, 0.1, 1, 2, 10, 20, 100, 200, 1000]
-
   s-rfr: 
     label: 'S-learner (RandomForestRegressor)'
     estimator: 'S-learner'
     base_estimator: ['rfr']
     base_estimator__min_samples_leaf: [5, 10, 20, 50, 100]
+
 
   t-rfr: 
     label: 'T-learner (RandomForestRegressor)'
@@ -105,3 +99,15 @@ backup:
     base_estimator__tree_method: ['hist']
     base_estimator__eta: [0.1, 0.3, 0.5, 0.7]
     base_estimator__max_depth: [3, 5, 7, 9]
+
+  t-xgbr: 
+    label: 'T-learner (XGBRegressor)'
+    estimator: 'T-learner'
+    base_estimator0: ['xgbr']
+    base_estimator1: ['xgbr']
+    base_estimator0__tree_method: ['hist']
+    base_estimator1__tree_method: ['hist']
+    base_estimator0__eta: [0.1, 0.3, 0.5, 0.7]
+    base_estimator1__eta: [0.1, 0.3, 0.5, 0.7]
+    base_estimator0__max_depth: [3, 5, 7, 9]
+    base_estimator1__max_depth: [3, 5, 7, 9]

@@ -23,8 +23,6 @@ def run_experiment(cfg):
     """ Estimate the causal effect of interventions and evaluate the results
     """
 
-    #raise Exception('REVERT TO STANDARD CV PROCEDURE AND ALLOW FOR EXTERNAL CV')
-
     # Set random seed
     np.random.seed(cfg.experiment.seed)
 
@@ -41,12 +39,11 @@ def run_experiment(cfg):
     # Remove rows that are neither of the main interventions
     df_obs = df_obs[df_obs[c_int].isin([cfg.experiment.intervention0, cfg.experiment.intervention1])]
 
-    # Fetch numeric features
+    # Fetch numeric features. Other variables (intervention, outcome) will be passed through unchanged
     c_num = [k for k in c_cov if df_obs[k].dtype != 'category']
     c_cat = [k for k in c_cov if df_obs[k].dtype == 'category']
 
     # Parse estimators and set up parameter grids
-    
     estimators = {}
     est = cfg.estimators.__dict__
     for k,v in est.items():
@@ -57,19 +54,11 @@ def run_experiment(cfg):
         param_grid['estimator__v_int0'] = [cfg.experiment.intervention0]
         param_grid['estimator__v_int1'] = [cfg.experiment.intervention1]
         
-        estimators[k] = {'label': v.label, 'estimator': v.estimator, 'scoring': v.scoring, 'param_grid': param_grid}
+        estimators[k] = {'label': v.label, 'estimator': v.estimator, 'param_grid': param_grid}
     
     # Create results dir
     results_dir = os.path.join(cfg.results.base_path, cfg.experiment.label)
     os.makedirs(results_dir, exist_ok=True)
-
-    # Scoring metrics
-    scoring_reg = {"R2": make_scorer(r2_score), 
-               "RMSE": make_scorer(root_mean_squared_error), 
-               "MSE": make_scorer(mean_squared_error)}
-
-    scoring_cla = {"AUC": make_scorer(roc_auc_score, response_method='predict_proba', multi_class='ovr'), 
-               "ACC": make_scorer(accuracy_score, response_method='predict')}
 
     # Fit estimators
     cv_results = {}
@@ -80,22 +69,16 @@ def run_experiment(cfg):
         label = v['label']
         e = v['estimator']
         param_grid = v['param_grid']
+        estimator_type = get_estimator(e)._effect_estimator_type
 
         # Select the appropriate scoring function
-        if v['scoring'] == 'regression':
-            scoring = scoring_reg
-            refit = 'R2'
-        elif v['scoring'] == 'propensity':
-            scoring = scoring_cla
-            refit = 'AUC'
+        if estimator_type == 'regression':
+            scoring, refit = get_scoring(estimator_type, c_out)
         else: 
-            raise Exception('Unknown scoring method %s' % v['scoring'])
+            scoring, refit = get_scoring(estimator_type, c_int)
 
         # Create pipeline, with transformation, including the intervention variable
-        if v['scoring'] == 'regression':
-            pipe = get_pipeline(e, c_num, c_cat+[c_int])
-        elif v['scoring'] == 'propensity':
-            pipe = get_pipeline(e, c_num+[c_out], c_cat)
+        pipe = get_pipeline(e, c_num, c_cat)
 
         # Perform cross-validation
         if cfg.selection.type == 'grid':
@@ -105,12 +88,9 @@ def run_experiment(cfg):
         else: 
             raise Exception('Unknown selection type %s' % cfg.selection.type)
 
+        # Fit estimator
         print('Performing cross-validation ...')
-        
-        if v['scoring'] == 'regression':
-            cv.fit(df_obs[c_cov + [c_int]], df_obs[c_out])
-        elif v['scoring'] == 'propensity':
-            cv.fit(df_obs[c_cov + [c_out]], df_obs[c_int])
+        cv.fit(df_obs, np.ones(df_obs.shape[0])) # @TODO: Don't want to pass around this dummy outcome!
 
         # Create results data frame
         rows = []
@@ -139,7 +119,7 @@ def run_experiment(cfg):
         df0 = pd.read_pickle(os.path.join(cfg.data.path, cfg.data.control))
         df1 = pd.read_pickle(os.path.join(cfg.data.path, cfg.data.target))
 
-        ope_result = cate_evaluation(clf, df0, df1, c_cov, c_int, c_out) #pd.DataFrame({}) #off_policy_evaluation(clf, cfg)
+        ope_result = cate_evaluation(clf, df0, df1, c_cov, c_int, c_out)
         ope_result['experiment'] = cfg.experiment.label
         ope_result['estimator'] = i
         ope_result = ope_result[['experiment', 'estimator'] + [c for c in ope_result.columns if not c in ['experiment', 'estimator']]]

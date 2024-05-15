@@ -13,7 +13,7 @@ from income.simulator import *
 def fit_simulator(cfg):
 
     # Load data
-    D_tr, c_cat, c_num, c_out, c_features = load_income_data(cfg.data.path)
+    D_tr, c_cat, c_num, c_out, c_features = load_income_data(cfg.data.path, download=cfg.data.download)
 
     # Set random seed
     np.random.seed(cfg.simulator.seed)
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     
     # Parse arguments
     parser = argparse.ArgumentParser(description='Fit IncomeSCM simulator')
-    parser.add_argument('-c', '--config', type=str, dest='config', help='Path to config file', default='config_v1.yml')
+    parser.add_argument('-c', '--config', type=str, dest='config', help='Path to config file', default='configs/config_v1.yml')
     args = parser.parse_args()
 
     # Load config file
