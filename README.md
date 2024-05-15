@@ -27,6 +27,8 @@ python sample.py [-c CONFIG_FILE]
 
 ## Using the data set
 
+* The IncomeSCM.V1.CATE data set is sampled from the simulator fit with the ```config_v1.yml``` file.
+
 # Papers using the data set 
 
 # Lectures using the data set 
