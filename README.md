@@ -1,6 +1,6 @@
-# IncomeSim
+# IncomeSCM
 
-IncomeSim is a time-series simulator based on the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult).
+IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult).
 
 ## Prerequisites
 
