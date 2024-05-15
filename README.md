@@ -5,9 +5,9 @@ IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive
 ## Using the CATE estimation data set (IncomeSCM-1.0.CATE)
 
 * The IncomeSCM-1.0.CATE data set is sampled from the simulator fit with the ```config_v1.yml``` file. The main data set files are:
-  * ```IncomeSCM-1.0.CATE_default.pkl``` Alias for (V1, default policy, 50 000 samples, horizon T=5, seed=0)
-  * ```IncomeSCM-1.0.CATE_no.pkl``` Alias for (V1, "Full" policy, 50 000 samples, horizon T=5, seed=1)
-  * ```IncomeSCM-1.0.CATE_full.pkl``` Alias for (V1, "No" policy, 50 000 samples, horizon T=5, seed=1)
+  * ```IncomeSCM-1.0.CATE_default.pkl``` (V1 simulator, default policy, 50 000 samples, horizon T=5, seed=0)
+  * ```IncomeSCM-1.0.CATE_no.pkl``` (V1 simulator, "Full" policy, 50 000 samples, horizon T=5, seed=1)
+  * ```IncomeSCM-1.0.CATE_full.pkl``` (V1 simulator, "No" policy, 50 000 samples, horizon T=5, seed=1)
   * All three files are contained in [IncomeSCM-1.0.CATE.zip](samples/IncomeSCM-1.0.CATE.zip)
 
 ## Using the simulator (IncomeSCM-1.0)
