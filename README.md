@@ -5,7 +5,7 @@ IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive
 ## Prerequisites
 
 * IncomeSCM is written in Python 3 and based on the Scikit-learn package and the Adult dataset. 
-* Start by installing python modules ```pandas, numpy, scikit-learn, jupyter, matplotlib, yaml, xgboost```, for example in a virtual environment. Below, we list the versions used during development and testing. 
+* To reproduce results or use the simulator, start by installing python modules ```pandas, numpy, scikit-learn, jupyter, matplotlib, yaml, xgboost```, for example in a virtual environment. Below, we list the versions used during development and testing. 
   ```
   pip install scikit-learn==1.4.1.post1 pandas==2.0.1 PyYAML==6.0 xgboost==2.0.0
   ```
