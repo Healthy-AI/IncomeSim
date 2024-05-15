@@ -4,6 +4,7 @@ experiment:
 data: 
   label: income
   path: data/income/
+  download: True
 
 simulator: 
   seed: 0
