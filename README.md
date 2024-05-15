@@ -10,6 +10,13 @@ IncomeSim is a time-series simulator based on the [Adult dataset](http://archive
   pip install scikit-learn==1.4.1.post1 pandas==2.0.1 PyYAML==6.0 xgboost==2.0.0
   ```
 
+## Using the simulator
+
+* The IncomeSCM simulator is fit to the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult) data set.
+* To fit the simulator, run the python script ```fit.py```
+```python fit.py [-c CONFIG_FILE]```
+* The default config file is configs/config_v1.yml
+
 ## Papers using the data set 
 
 ## Lectures using the data set 
