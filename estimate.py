@@ -6,7 +6,7 @@ sklearn.set_config(transform_output="pandas")
 from sklearn.exceptions import ConvergenceWarning
 
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from sklearn.metrics import make_scorer, roc_auc_score, mean_squared_error, r2_score, root_mean_squared_error
+from sklearn.metrics import make_scorer, roc_auc_score, mean_squared_error, r2_score, root_mean_squared_error, accuracy_score
 
 from income.data import *
 from income.util import *
@@ -22,6 +22,8 @@ PROTECTED_KEYS = ['label', 'estimator', 'scoring']
 def run_experiment(cfg):
     """ Estimate the causal effect of interventions and evaluate the results
     """
+
+    #raise Exception('REVERT TO STANDARD CV PROCEDURE AND ALLOW FOR EXTERNAL CV')
 
     # Set random seed
     np.random.seed(cfg.experiment.seed)
@@ -55,16 +57,19 @@ def run_experiment(cfg):
         param_grid['estimator__v_int0'] = [cfg.experiment.intervention0]
         param_grid['estimator__v_int1'] = [cfg.experiment.intervention1]
         
-        estimators[k] = {'label': v.label, 'estimator': v.estimator, 'param_grid': param_grid}
+        estimators[k] = {'label': v.label, 'estimator': v.estimator, 'scoring': v.scoring, 'param_grid': param_grid}
     
     # Create results dir
     results_dir = os.path.join(cfg.results.base_path, cfg.experiment.label)
     os.makedirs(results_dir, exist_ok=True)
 
     # Scoring metrics
-    scoring = {"R2": make_scorer(r2_score), 
+    scoring_reg = {"R2": make_scorer(r2_score), 
                "RMSE": make_scorer(root_mean_squared_error), 
                "MSE": make_scorer(mean_squared_error)}
+
+    scoring_cla = {"AUC": make_scorer(roc_auc_score, response_method='predict_proba', multi_class='ovr'), 
+               "ACC": make_scorer(accuracy_score, response_method='predict')}
 
     # Fit estimators
     cv_results = {}
@@ -76,19 +81,36 @@ def run_experiment(cfg):
         e = v['estimator']
         param_grid = v['param_grid']
 
+        # Select the appropriate scoring function
+        if v['scoring'] == 'regression':
+            scoring = scoring_reg
+            refit = 'R2'
+        elif v['scoring'] == 'propensity':
+            scoring = scoring_cla
+            refit = 'AUC'
+        else: 
+            raise Exception('Unknown scoring method %s' % v['scoring'])
+
         # Create pipeline, with transformation, including the intervention variable
-        pipe = get_pipeline(e, c_num, c_cat+[c_int])
+        if v['scoring'] == 'regression':
+            pipe = get_pipeline(e, c_num, c_cat+[c_int])
+        elif v['scoring'] == 'propensity':
+            pipe = get_pipeline(e, c_num+[c_out], c_cat)
 
         # Perform cross-validation
         if cfg.selection.type == 'grid':
-            cv = GridSearchCV(pipe, param_grid, cv=cfg.selection.folds, refit='R2', scoring=scoring, return_train_score=True)
+            cv = GridSearchCV(pipe, param_grid, cv=cfg.selection.folds, refit=refit, scoring=scoring, return_train_score=True)
         elif cfg.selection.type == 'random':
-            cv = RandomizedSearchCV(pipe, param_grid, cv=cfg.selection.folds, refit='R2', scoring=scoring, return_train_score=True, n_iter=cfg.selection.n_iter)
+            cv = RandomizedSearchCV(pipe, param_grid, cv=cfg.selection.folds, refit=refit, scoring=scoring, return_train_score=True, n_iter=cfg.selection.n_iter)
         else: 
             raise Exception('Unknown selection type %s' % cfg.selection.type)
 
         print('Performing cross-validation ...')
-        cv.fit(df_obs[c_cov + [c_int]], df_obs[c_out])
+        
+        if v['scoring'] == 'regression':
+            cv.fit(df_obs[c_cov + [c_int]], df_obs[c_out])
+        elif v['scoring'] == 'propensity':
+            cv.fit(df_obs[c_cov + [c_out]], df_obs[c_int])
 
         # Create results data frame
         rows = []

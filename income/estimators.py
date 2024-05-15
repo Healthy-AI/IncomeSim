@@ -1,7 +1,7 @@
 import inspect 
 import numpy as np
 
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.metrics import roc_auc_score, mean_squared_error, r2_score, root_mean_squared_error
@@ -60,7 +60,7 @@ def get_estimator(e):
     else: 
         raise Exception('Unknown estimator %s' % e)
 
-class IPWEstimator(BaseEstimator):
+class IPWEstimator(BaseEstimator, ClassifierMixin):
     """ Implements the inverse propensity weighting (IPW) estimator of average outcome """ 
 
     def __init__(self, base_estimator='lr', c_int='intervention', c_out='outcome', c_adj=[], weighted=True, v_int0=0, v_int1=1):
@@ -71,7 +71,6 @@ class IPWEstimator(BaseEstimator):
         self.c_adj = c_adj
         self.v_int0 = v_int0
         self.v_int1 = v_int1
-        self.fitted = False
         self.weighted = weighted
         
     def _estimate(self, X, t, y):
@@ -79,6 +78,7 @@ class IPWEstimator(BaseEstimator):
         
         e = self.base_estimator.predict_proba(X)[:,1]
 
+        t = 1*(t==self.v_int1)
         n = X.shape[0]
         n0 = (1-t).sum()
         n1 = n-n0
@@ -97,16 +97,16 @@ class IPWEstimator(BaseEstimator):
         self.w = (t*w1 + (1-t)*w0)*n
         
         
-    def fit(self, x, y, sample_weight=None):
+    def fit(self, x, t, sample_weight=None):
         """ Fits a propensity model and estimates mean potential outcomes """ 
 
         c_adjs = [c for c in x.columns if c in self.c_adj or c.partition('__')[0] in self.c_adj]
         
         X = x[c_adjs]
-        t = x[self.c_int + '__%s' % self.v_int1]
+        y = x[self.c_out]
         
         self.base_estimator.fit(X, t)
-        self.fitted = True
+        self.classes_ = self.base_estimator.classes_
         
         self._estimate(X, t, y)
 
@@ -126,6 +126,11 @@ class IPWEstimator(BaseEstimator):
         X = x[c_adjs]
         
         return self.base_estimator.predict_proba(X)
+
+    def predict_propensity(self, x):
+        """ Returns the estimated probability of the treated intervention """
+
+        return self.predict_proba(x)[:,1]
 
     def predict_outcomes(self, x):
         """ Predicts the potential outcomes given covariates and treatments in x """
@@ -147,7 +152,7 @@ class IPWEstimator(BaseEstimator):
             del params['base_estimator']
 
         super().set_params(**params)
-
+        return self
 
 
 class PotentialOutcomeEstimator(BaseEstimator):
@@ -165,12 +170,16 @@ class PotentialOutcomeEstimator(BaseEstimator):
     def predict_proba(self, x):
         pass
 
+    def predict_outcomes(self, x):
+        return self.predict(x)
+
     #def score. Left out.   
 
     def set_params(self, **params):
         """ Set the parameter of the estimator and base estimators """
 
         super().set_params(**params)
+        return self
     
 class S_learner(PotentialOutcomeEstimator):
     """ Implements the S-learner meta learner """ 
@@ -213,6 +222,7 @@ class S_learner(PotentialOutcomeEstimator):
             del params['base_estimator']
 
         super().set_params(**params)
+        return self
 
 
 
@@ -277,6 +287,7 @@ class T_learner(PotentialOutcomeEstimator):
             del params['base_estimator1']
 
         super().set_params(**params)
+        return self
 
 
 

@@ -14,8 +14,11 @@ def cate_evaluation(clf, df0, df1, c_cov, c_int, c_out, n_bootstrap=1000, alpha=
             print(df0.iloc[i][c_cov] != df1.iloc[i][c_cov])
             raise Exception('Dataframes for control and treated counterfactuals not matched')
     
-    y0 = clf.predict(df0[c_cov+[c_int]])
-    y1 = clf.predict(df1[c_cov+[c_int]])
+
+    dft0 = clf[:-1].transform(df0[c_cov+[c_int]])
+    dft1 = clf[:-1].transform(df1[c_cov+[c_int]])
+    y0 = clf[-1].predict_outcomes(dft0)
+    y1 = clf[-1].predict_outcomes(dft1)
 
     cate_est = y1-y0
     cate_sample = df1[c_out]-df0[c_out]
