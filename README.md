@@ -35,7 +35,7 @@ python sample.py [-c CONFIG_FILE]
   * ```income_scm-1.0.CATE_default.pkl``` Alias for (V1, default policy, 50 000 samples, horizon T=5, seed=0)
   * ```income_scm-1.0.CATE_no.pkl``` Alias for (V1, "Full" policy, 50 000 samples, horizon T=5, seed=1)
   * ```income_scm-1.0.CATE_full.pkl``` Alias for (V1, "No" policy, 50 000 samples, horizon T=5, seed=1)
-  * All three files are contained in ```income_scm-1.0.CATE.zip```
+  * All three files are contained in [income_scm-1.0.CATE.zip](samples/income_scm-1.0.CATE.zip)
 
 # Papers using the data set 
 
