@@ -20,15 +20,18 @@ python fit.py [-c CONFIG_FILE]
 * The default config file is configs/config_v1.yml
 * To sample from the simulator, use the script ```sample.py```
 ```
-python fit.py [-c CONFIG_FILE]
+python sample.py [-c CONFIG_FILE]
 ```
-* This also uses the same default config file, which specifies which fitted model to use, how many samples are used, and from which (counterfactual) policy to sample. By default, 50 000 samples are generated from the "default" (observational) "full" and "no" policies. 
+* This also uses the same default config file, which specifies which fitted model to use, how many samples are used, and from which (counterfactual) policy to sample. By default, 50 000 samples are generated from the "default" (observational) "full" and "no" policies.
+* The samples are stored (by default) in ```./samples/[SAMPLE_FILE_NAME].pkl```. The file name is determined by the version labels specified in the config file.
 
-## Papers using the data set 
+## Using the data set
 
-## Lectures using the data set 
+# Papers using the data set 
 
-### DAT465 Lecture [2023]
+# Lectures using the data set 
+
+## DAT465 Lecture [2023]
 
 If you want to follow along in the notebook during the demo lecture
 1. Clone this repository
@@ -43,14 +46,14 @@ pip install pandas numpy scikit-learn jupyter matplotlib
 
 The slides for the lecture can be found on Canvas.
 
-## Coding in the demo
+### Coding in the demo
 
 * Open [dat465_lecture_demo.ipynb](demos/dat465_lecture_demo.ipynb) in Jupyter in a Python environment with the prerequisites above
 ```bash
 jupyter notebook   
 ```
 
-### ProbAI 23 lecture [2023]
+## ProbAI 23 lecture [2023]
 
 If you want to follow along in the notebook during the ProbAI lecture, you have two options: 
 1. Clone this repository and open [probai_lecture_github.ipynb](demos/probai_lecture_github.ipynb) in Jupyter/Jupyter lab
