@@ -45,7 +45,8 @@ def load_income_data(folder='data/adult/', data_only=False, download=True):
     test_file = os.path.join(folder, 'adult.test')
 
     # Check if files exist
-    if not os.isfile(train_file) or not os.isfile(col_file) or not os.isfile(test_file):
+    if download and (not os.path.isfile(train_file) or not os.path.isfile(col_file) or not os.path.isfile(test_file)):
+        print('Donwloading Adult data set...')
         download_adult_data(folder)
 
     # Load data
