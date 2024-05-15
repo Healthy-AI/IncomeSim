@@ -2,9 +2,20 @@
 
 IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult).
 
-## Prerequisites
+## Using the CATE estimation data set (IncomeSCM-1.0.CATE)
 
-* IncomeSCM is written in Python 3 and based on the Scikit-learn package and the Adult dataset. 
+* The IncomeSCM-1.0.CATE data set is sampled from the simulator fit with the ```config_v1.yml``` file. The main data set files are:
+  * ```IncomeSCM-1.0.CATE_default.pkl``` Alias for (V1, default policy, 50 000 samples, horizon T=5, seed=0)
+  * ```IncomeSCM-1.0.CATE_no.pkl``` Alias for (V1, "Full" policy, 50 000 samples, horizon T=5, seed=1)
+  * ```IncomeSCM-1.0.CATE_full.pkl``` Alias for (V1, "No" policy, 50 000 samples, horizon T=5, seed=1)
+  * All three files are contained in [IncomeSCM-1.0.CATE.zip](samples/IncomeSCM-1.0.CATE.zip)
+
+## Using the simulator (IncomeSCM-1.0)
+
+* IncomeSCM is written in Python 3 and based on the Scikit-learn package and the Adult dataset.
+  
+### Prerequisites
+
 * To reproduce results or use the simulator, start by installing python modules ```pandas, numpy, scikit-learn, jupyter, matplotlib, yaml, xgboost```, for example in a virtual environment. Below, we list the versions used during development and testing. 
   ```
   pip install scikit-learn==1.4.1.post1 pandas==2.0.1 PyYAML==6.0 xgboost==2.0.0
@@ -13,8 +24,6 @@ IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive
   ```
   git clone git@github.com:Healthy-AI/IncomeSim.git
   ```
-
-## Using the simulator
 
 * The IncomeSCM simulator is fit to the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult) data set.
 * To fit the simulator, run the python script ```fit.py```
@@ -29,13 +38,7 @@ python sample.py [-c CONFIG_FILE]
 * This also uses the same default config file, which specifies which fitted model to use, how many samples are used, and from which (counterfactual) policy to sample. By default, 50 000 samples are generated from the "default" (observational) "full" and "no" policies.
 * The samples are stored (by default) in ```./samples/[SAMPLE_FILE_NAME].pkl```. The file name is determined by the version labels specified in the config file.
 
-## Using the data set
 
-* The IncomeSCM-1.0.CATE data set is sampled from the simulator fit with the ```config_v1.yml``` file. The main data set files are:
-  * ```IncomeSCM-1.0.CATE_default.pkl``` Alias for (V1, default policy, 50 000 samples, horizon T=5, seed=0)
-  * ```IncomeSCM-1.0.CATE_no.pkl``` Alias for (V1, "Full" policy, 50 000 samples, horizon T=5, seed=1)
-  * ```IncomeSCM-1.0.CATE_full.pkl``` Alias for (V1, "No" policy, 50 000 samples, horizon T=5, seed=1)
-  * All three files are contained in [IncomeSCM-1.0.CATE.zip](samples/IncomeSCM-1.0.CATE.zip)
 
 # Papers using the data set 
 
