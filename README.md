@@ -9,6 +9,46 @@ IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive
   * ```IncomeSCM-1.0.CATE_no.pkl``` (V1 simulator, "Full" policy, 50 000 samples, horizon T=5, seed=1)
   * ```IncomeSCM-1.0.CATE_full.pkl``` (V1 simulator, "No" policy, 50 000 samples, horizon T=5, seed=1)
   * All three files are contained in [IncomeSCM-1.0.CATE.zip](samples/IncomeSCM-1.0.CATE.zip)
+* The "default" policy data set represents observational data for causal effect estimators to learn from.
+* The "full" and "no" policy data sets represent samples observed under alternative interventions (T<-1 and T<-0, respectively).
+
+### Data set description
+
+The data set represents 13 variables extracted from the 1994 US Census bureau database, as well as a hand-designed "studies" variable. 
+
+**Covariates**
+
+| Column  | Description | Type |
+| ------------- | ------------- | ------------- |
+| native-country  | Native country  | Categorical |
+| sex  | Sex | Categorical |
+| race  | Race  | Categorical |
+| age  | Age  | Numeric |
+| education  | Education type (e.g., Bachelors)  | Categorical |
+| education-num  | Education (numeric representation)  | Numeric |
+| workclass  | Workclass (e.g., private, self-employed)  | Categorical |
+| occupation  | Occupation (e.g., Tech-support)  | Categorical |
+| marital-status  | Marital status (e.g., married)  | Categorical |
+| relationship  | Relationship type (e.g., wife)  | Categorical |
+| capital-net  | Net capital gains  | Numeric |
+| hours-per-week  | Number of work hours per week | Numeric |
+| income_prev  | Income the previous year (USD)  | Numeric |
+| studies_prev  | Studies the previous year  | Categorical |
+
+**Intervention**
+| Column  | Description | Type |
+| ------------- | ------------- | ------------- |
+| studies  | Studies the current year (e.g., Full-time studies)  | Categorical |
+
+**Outcome**
+| Column  | Description | Type |
+| ------------- | ------------- | ------------- |
+| income  | Income 5 years after the intervention (USD)   | Numeric |
+
+### Task description
+
+* The goal is to estimate the causal effect on ```income``` ($Y$) after intervening on ```studies``` with "Full-time studies" ($T=1$), relative to "No studies" ($T=0$),
+  $$\Delta = Y(1) - Y(0)$$, where $Y(t)$ is the potential outcome of intervening with $T\leftarrow t$. 
 
 ## Using the simulator (IncomeSCM-1.0)
 
