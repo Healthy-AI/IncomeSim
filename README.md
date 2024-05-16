@@ -74,7 +74,7 @@ The main data set files are:
 ```python
 import pandas as pd
 import numpy as np
-from income.models import S_learner
+from income.estimators import S_learner
 
 dobs = pd.read_pickle('samples/IncomeSCM-1.0.CATE_default.pkl')
 d1 = pd.read_pickle('samples/IncomeSCM-1.0.CATE_no.pkl')
