@@ -41,7 +41,7 @@ The data set represents 13 variables extracted from the 1994 US Census bureau da
 
 ### Task description
 
-The goal is to estimate the causal effect on ```income``` ($Y$) after intervening on ```studies``` with "Full-time studies" ($T=1$), relative to "No studies" ($T=0$),
+The goal is to use observational data to estimate the causal effect on ```income``` ($Y$) after intervening on ```studies``` with "Full-time studies" ($T=1$), relative to "No studies" ($T=0$),
 $$\Delta = Y(1) - Y(0),$$
 where $Y(t)$ is the potential outcome of intervening with $T\leftarrow t$. In particular, we are interested in the conditional average treatment effect (CATE),
 $$\mathrm{CATE}(z) = \mathbb{E}[\Delta \mid Z=z]$$
@@ -52,17 +52,20 @@ where $Z \subseteq X$ is a given set of covariates. For this, we consider three 
 
 In addition, we seek to estimate the average treatment effect (ATE), $$\mathrm{ATE} = \mathbb{E}[\Delta]$$ using the first two conditioning sets above for adjustment. 
 
+### Evaluation
+
 We measure the quality in estimates by the $R^2$, MSE, RMSE for CATE and the absolute error (AE) for ATE. 
 
 ### File description
 
- The main data set files are:
+The main data set files are:
   * ```IncomeSCM-1.0.CATE_default.pkl``` (V1 simulator, default policy, 50 000 samples, horizon T=5, seed=0)
   * ```IncomeSCM-1.0.CATE_no.pkl``` (V1 simulator, "Full" policy, 50 000 samples, horizon T=5, seed=1)
   * ```IncomeSCM-1.0.CATE_full.pkl``` (V1 simulator, "No" policy, 50 000 samples, horizon T=5, seed=1)
   * All three files are contained in [IncomeSCM-1.0.CATE.zip](samples/IncomeSCM-1.0.CATE.zip)
+
 * The "default" policy data set represents observational data for causal effect estimators to learn from.
-* The "full" and "no" policy data sets represent samples observed under alternative interventions (T<-1 and T<-0, respectively).
+* The "full" and "no" policy data sets represent samples observed under alternative interventions ($T \leftarrow 1$ and $T \leftarrow 0$, respectively).
 
 ## Using the simulator (IncomeSCM-1.0)
 
