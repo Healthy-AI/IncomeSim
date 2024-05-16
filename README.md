@@ -70,7 +70,7 @@ The main data set files are:
 
 * **Training data**: The "default" policy data set represents observational data for causal effect estimators to learn from.
 * **Evaluation data**: The "full" and "no" policy data sets represent samples observed under alternative interventions ($A \leftarrow 1$ and $A \leftarrow 0$, respectively).
-  The out-of-sample quality of estimates of CATE and ATE can be estimated by using a model fit to the training data to predict (average) potential outcome for the subjects in the file representing each intervention and compare to the observed values. In Python:
+  The out-of-sample quality of estimates of CATE and ATE can be estimated by using a model fit to the training data to predict (average) potential outcome for the subjects in the file representing each intervention and compare to the observed values. In Python, using the "S-learner" estimator implemented in the IncomeSCM package:
 ```python
 import pandas as pd
 import numpy as np
@@ -98,7 +98,7 @@ ae_ate = np.abs(ate_pred - ate_true)
 ```
 A real fitting and evaluation example is given in ```estimate.py```
 
-## Using the simulator (IncomeSCM-1.0)
+## Using the simulator and estimators (IncomeSCM-1.0)
 
 * IncomeSCM is written in Python 3 and based on the Scikit-learn package and the Adult dataset.
   
