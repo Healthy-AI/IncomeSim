@@ -68,25 +68,27 @@ The main data set files are:
 
 * **Training data**: The "default" policy data set represents observational data for causal effect estimators to learn from.
 * **Evaluation data**: The "full" and "no" policy data sets represent samples observed under alternative interventions ($A \leftarrow 1$ and $A \leftarrow 0$, respectively).
-  The out-of-sample quality of estimates of CATE and ATE can be estimated by using a model fit to the training data to predict (average) potential outcome for the subjects in the file representing each intervention and compare to the observed values. In pseudo code:
-```
-dobs = load('IncomeSCM-1.0.CATE_default.pkl')
-d1 = load('IncomeSCM-1.0.CATE_no.pkl')
-d0 = load('IncomeSCM-1.0.CATE_full.pkl')
+  The out-of-sample quality of estimates of CATE and ATE can be estimated by using a model fit to the training data to predict (average) potential outcome for the subjects in the file representing each intervention and compare to the observed values. In Python:
+```python
+dobs = pd.read_pickle('samples/IncomeSCM-1.0.CATE_default.pkl')
+d1 = pd.read_pickle('samples/IncomeSCM-1.0.CATE_no.pkl')
+d0 = pd.read_pickle('samples/IncomeSCM-1.0.CATE_full.pkl')
 
-model = Estimator().fit(dobs)
+model = S_learner(base_estimator=... c_int='studies', c_out='income', c_adj=[...]).fit(dobs)     # c_adj is the set of adjustment variables.
+                                                                                                 # base_estimator is any regression estimator. For the example to work
+                                                                                                 #   out of the box, it must handle categorical attributes in dobs[c_adj]
 
 yp1 = model.predict_outcomes(d1)
 yp0 = model.predict_outcomes(d0)
 
 cate_pred = yp1 - yp0
 cate_true = d1['income'] - d0['income']
-mse_cate = mean(square(cate_pred - cate_true))
+mse_cate = np.mean(np.square(cate_pred - cate_true))
 
-ate_pred = mean(cate_pred)
-ate_true = mean(cate_true)
+ate_pred = np.mean(cate_pred)
+ate_true = np.mean(cate_true)
 
-ae_ate = |ate_pred - ate_true|
+ae_ate = np.abs(ate_pred - ate_true)
 ```
 A real fitting and evaluation example is given in ```estimate.py```
 
