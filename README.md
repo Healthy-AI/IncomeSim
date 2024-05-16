@@ -29,7 +29,7 @@ The data set represents 13 variables extracted from the 1994 US Census bureau da
 | income_prev  | Income the previous year (USD)  | Numeric |
 | studies_prev  | Studies the previous year  | Categorical |
 
-**Intervention, $T$**
+**Intervention, $A$**
 | Column  | Description | Type |
 | ------------- | ------------- | ------------- |
 | studies  | Studies the current year (e.g., Full-time studies)  | Categorical |
@@ -41,14 +41,14 @@ The data set represents 13 variables extracted from the 1994 US Census bureau da
 
 ### Task description
 
-The goal is to use observational data to estimate the causal effect on ```income``` ($Y$) after intervening on ```studies``` with "Full-time studies" ($T=1$), relative to "No studies" ($T=0$),
+The goal is to use observational data to estimate the causal effect on ```income``` ($Y$) after intervening on ```studies``` with "Full-time studies" ($A \leftarrow 1$), relative to "No studies" ($A \leftarrow 0$),
 $$\Delta = Y(1) - Y(0),$$
-where $Y(t)$ is the potential outcome of intervening with $T\leftarrow t$. In particular, we are interested in the conditional average treatment effect (CATE),
+where $Y(t)$ is the potential outcome of intervening with $A\leftarrow a$. In particular, we are interested in the conditional average treatment effect (CATE),
 $$\mathrm{CATE}(z) = \mathbb{E}[\Delta \mid Z=z]$$
 where $Z \subseteq X$ is a given set of covariates. For this, we consider three main conditioning sets: 
 1. $Z$ is the set of all pre-intervention covariates
-2. $Z$ is the set of direct causes of $T$
-3. $Z$ is a subset of covariates which is an invalid adjustment set. Specifically, $Z = (\mathrm{age}_1, \mathrm{education}_1, \mathrm{income}_1)$.
+2. $Z$ is the set of direct causes of $A$
+3. $Z$ is a subset of covariates which is an invalid adjustment set. Specifically, $Z = (\mathrm{age}, \mathrm{education}, \mathrm{income\\_prev})$.
 
 In addition, we seek to estimate the average treatment effect (ATE), $$\mathrm{ATE} = \mathbb{E}[\Delta]$$ using the first two conditioning sets above for adjustment. 
 
@@ -59,13 +59,34 @@ We measure the quality in estimates by the $R^2$, MSE, RMSE for CATE and the abs
 ### File description
 
 The main data set files are:
-  * ```IncomeSCM-1.0.CATE_default.pkl``` (V1 simulator, default policy, 50 000 samples, horizon T=5, seed=0)
-  * ```IncomeSCM-1.0.CATE_no.pkl``` (V1 simulator, "Full" policy, 50 000 samples, horizon T=5, seed=1)
-  * ```IncomeSCM-1.0.CATE_full.pkl``` (V1 simulator, "No" policy, 50 000 samples, horizon T=5, seed=1)
+  * ```IncomeSCM-1.0.CATE_default.pkl``` (V1 simulator, default policy ($A$ observational), 50 000 samples, horizon T=5, seed=0)
+  * ```IncomeSCM-1.0.CATE_no.pkl``` (V1 simulator, "No studies" policy ($A \leftarrow 0$), 50 000 samples, horizon T=5, seed=1)
+  * ```IncomeSCM-1.0.CATE_full.pkl``` (V1 simulator, "Full-time studies" policy ($A \leftarrow 1$), 50 000 samples, horizon T=5, seed=1)
   * All three files are contained in [IncomeSCM-1.0.CATE.zip](samples/IncomeSCM-1.0.CATE.zip)
 
-* The "default" policy data set represents observational data for causal effect estimators to learn from.
-* The "full" and "no" policy data sets represent samples observed under alternative interventions ($T \leftarrow 1$ and $T \leftarrow 0$, respectively).
+* **Training data**: The "default" policy data set represents observational data for causal effect estimators to learn from.
+* **Evaluation data**: The "full" and "no" policy data sets represent samples observed under alternative interventions ($A \leftarrow 1$ and $A \leftarrow 0$, respectively).
+  The out-of-sample quality of estimates of CATE and ATE can be estimated by using a model fit to the training data to predict (average) potential outcome for the subjects in the file representing each intervention and compare to the observed values. In pseudo code:
+```
+dobs = load('IncomeSCM-1.0.CATE_default.pkl')
+d1 = load('IncomeSCM-1.0.CATE_no.pkl')
+d0 = load('IncomeSCM-1.0.CATE_full.pkl')
+
+model = Estimator().fit(dobs)
+
+yp1 = model.predict_outcomes(d1)
+yp0 = model.predict_outcomes(d0)
+
+cate_pred = yp1 - yp0
+cate_true = d1['income'] - d0['income']
+mse_cate = mean(square(cate_pred - cate_true))
+
+ate_pred = mean(cate_pred)
+ate_true = mean(cate_true)
+
+ae_ate = |ate_pred - ate_true|
+```
+A real fitting and evaluation example is given in ```estimate.py```
 
 ## Using the simulator (IncomeSCM-1.0)
 
