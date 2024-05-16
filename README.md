@@ -72,6 +72,10 @@ The main data set files are:
 * **Evaluation data**: The "full" and "no" policy data sets represent samples observed under alternative interventions ($A \leftarrow 1$ and $A \leftarrow 0$, respectively).
   The out-of-sample quality of estimates of CATE and ATE can be estimated by using a model fit to the training data to predict (average) potential outcome for the subjects in the file representing each intervention and compare to the observed values. In Python:
 ```python
+import pandas as pd
+import numpy as np
+from income.models import S_learner
+
 dobs = pd.read_pickle('samples/IncomeSCM-1.0.CATE_default.pkl')
 d1 = pd.read_pickle('samples/IncomeSCM-1.0.CATE_no.pkl')
 d0 = pd.read_pickle('samples/IncomeSCM-1.0.CATE_full.pkl')
