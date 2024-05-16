@@ -53,6 +53,8 @@ where $Z \subseteq X$ is a given set of covariates. For this, we consider three 
 
 In addition, we seek to estimate the average treatment effect (ATE), $$\mathrm{ATE} = \mathbb{E}[\Delta]$$ using the first two conditioning sets above for adjustment. 
 
+* *Note: The intervention variable ```studies``` is simulated with 4 values: Full-time studies, No studies, Evening course and Day course. In the Tasks above, samples with interventions other than Full-time studies or No studies can be discarded, or used for learning, depending on the estimator.*
+
 ### Evaluation
 
 We measure the quality in estimates by the $R^2$, MSE, RMSE for CATE and the absolute error (AE) for ATE. Due to the complexity of the simulator, the CATE and ATE are not known as closed-form. 
