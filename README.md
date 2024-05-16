@@ -4,7 +4,7 @@ IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive
 
 ## Using the CATE estimation data set (IncomeSCM-1.0.CATE)
 
-* The IncomeSCM-1.0.CATE data set is sampled from the IncomeSCM-1.0 simulator, fit with the ```config_v1.yml``` configuration file.
+The IncomeSCM-1.0.CATE data set is sampled from the IncomeSCM-1.0 simulator, fit with the ```config_v1.yml``` configuration file.
 
 ### Data set description
 
