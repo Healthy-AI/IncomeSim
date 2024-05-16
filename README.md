@@ -15,8 +15,8 @@ The data set represents 13 variables extracted from the 1994 US Census bureau da
 | Column  | Description | Type |
 | ------------- | ------------- | ------------- |
 | native-country  | Native country  | Categorical |
-| sex  | Sex | Categorical |
-| race  | Race  | Categorical |
+| sex  | Sex (as reported in census) | Categorical |
+| race  | Race (as reported in census)  | Categorical |
 | age  | Age  | Numeric |
 | education  | Education type (e.g., Bachelors)  | Categorical |
 | education-num  | Education (numeric representation)  | Numeric |
