@@ -1,7 +1,8 @@
 # IncomeSCM
 
 IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult) intended for evaluation of causal effect estimators.
-It has been used to construct a cross-sectional benchmark data set for conditional average treatment effect (CATE) estimation, IncomeSCM-1.0.CATE.
+
+It has been used to construct a cross-sectional benchmark data set for conditional average treatment effect (CATE) estimation, IncomeSCM-1.0.CATE. The files for this benchmark are contained in [IncomeSCM-1.0.CATE.zip](samples/IncomeSCM-1.0.CATE.zip).
 
 ## Using the CATE estimation data set (IncomeSCM-1.0.CATE)
 
@@ -115,7 +116,7 @@ A real fitting and evaluation example is given in ```estimate.py```
   ```
 
 * The IncomeSCM simulator is fit to the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult) data set.
-* To fit the simulator, run the python script ```fit.py```
+* To fit the simulator, run the python script ```fit.py``` in the repository folder
 ```
 python fit.py [-c CONFIG_FILE]
 ```
