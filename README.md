@@ -10,7 +10,7 @@ The IncomeSCM-1.0.CATE data set is sampled from the IncomeSCM-1.0 simulator, fit
 
 The data set represents 13 variables extracted from the 1994 US Census bureau database, as well as a hand-designed "studies" variable. 
 
-**Covariates**
+**Covariates, $X$**
 
 | Column  | Description | Type |
 | ------------- | ------------- | ------------- |
@@ -29,12 +29,12 @@ The data set represents 13 variables extracted from the 1994 US Census bureau da
 | income_prev  | Income the previous year (USD)  | Numeric |
 | studies_prev  | Studies the previous year  | Categorical |
 
-**Intervention**
+**Intervention, $T$**
 | Column  | Description | Type |
 | ------------- | ------------- | ------------- |
 | studies  | Studies the current year (e.g., Full-time studies)  | Categorical |
 
-**Outcome**
+**Outcome, $Y$**
 | Column  | Description | Type |
 | ------------- | ------------- | ------------- |
 | income  | Income 5 years after the intervention (USD)   | Numeric |
@@ -44,11 +44,11 @@ The data set represents 13 variables extracted from the 1994 US Census bureau da
 The goal is to estimate the causal effect on ```income``` ($Y$) after intervening on ```studies``` with "Full-time studies" ($T=1$), relative to "No studies" ($T=0$),
 $$\Delta = Y(1) - Y(0),$$
 where $Y(t)$ is the potential outcome of intervening with $T\leftarrow t$. In particular, we are interested in the conditional average treatment effect (CATE),
-$$\mathrm{CATE}(x) = \mathbb{E}[\Delta \mid X=x]$$
-where $X$ is a given set of covariates. For this, we consider three main conditioning sets: 
-1. $X$ is the set of all pre-intervention covariates
-2. $X$ is the set of direct causes of $T$
-3. $X$ is a subset of covariates which is an invalid adjustment set. Specifically, $X = (\mathrm{age}_1, \mathrm{education}_1, \mathrm{income}_1)$.
+$$\mathrm{CATE}(z) = \mathbb{E}[\Delta \mid Z=z]$$
+where $Z \subseteq X$ is a given set of covariates. For this, we consider three main conditioning sets: 
+1. $Z$ is the set of all pre-intervention covariates
+2. $Z$ is the set of direct causes of $T$
+3. $Z$ is a subset of covariates which is an invalid adjustment set. Specifically, $Z = (\mathrm{age}_1, \mathrm{education}_1, \mathrm{income}_1)$.
 
 In addition, we seek to estimate the average treatment effect (ATE), $$\mathrm{ATE} = \mathbb{E}[\Delta]$$ using the first two conditioning sets above for adjustment. 
 
