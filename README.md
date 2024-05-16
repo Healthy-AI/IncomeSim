@@ -131,6 +131,7 @@ python sample.py [-c CONFIG_FILE]
 
 # Papers using the data set 
 
+<!--
 # Lectures using the data set 
 
 ## DAT465 Lecture [2023]
@@ -179,3 +180,4 @@ You don't need to do this if you use the ProbAI notebook, the notebook does this
 **Generating data**
 
 * Run ``` python generate.py -n <number of samples> -T <length of horizon> ``` to fit the simulator and generate data
+-->
