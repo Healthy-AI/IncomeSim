@@ -1,6 +1,7 @@
 # IncomeSCM
 
 IncomeSCM is a time-series simulator based on the [Adult dataset](http://archive.ics.uci.edu/dataset/2/adult).
+It has been used to construct a cross-sectional benchmark data set for causal effect estimation, IncomeSCM-1.0.CATE.
 
 ## Using the CATE estimation data set (IncomeSCM-1.0.CATE)
 
@@ -54,7 +55,8 @@ In addition, we seek to estimate the average treatment effect (ATE), $$\mathrm{A
 
 ### Evaluation
 
-We measure the quality in estimates by the $R^2$, MSE, RMSE for CATE and the absolute error (AE) for ATE. 
+We measure the quality in estimates by the $R^2$, MSE, RMSE for CATE and the absolute error (AE) for ATE. Due to the complexity of the simulator, the CATE and ATE are not known as closed-form. 
+Instead, we sample both counterfactual outcomes for a fixed of baseline subjects and compare their outcomes to each other. 
 
 ### File description
 
